@@ -11,7 +11,7 @@ The script is written with intention of using Sonarr, to monitor and download re
 A second script, 'linker.py' will check that all the strm still contain valid URLs. If the URL is cannot be found on furk for over 24 hours, then it will delete the strm file and signal to sonarr to redownload the episode.
 
 
-How it works:
+<b>How it works:</b>
 
 1. Checks torrent folder for any .torrent files and turns them in to .magnet files (ie text files containing the magnet url)
 2. Goes through each .magnet link one at a time and adds to furk
@@ -28,7 +28,7 @@ How it works:
 12. Any newly inactive links are flagged for removal with a specific time stamp
 13. If the link is already flagged and has been for 23 hours or more, the strm link is deleted and Sonarr is notified to monitor for the episode again and search for all monitored episodes
 
-Setup:
+<b>Setup:</b>
 
 Setup should be relatively straight forward. rename the 'configs.py - template' to 'configs.py' and fill in to include your furk and sonarr api keys, together with you torrents folder , set as your torrent black hole in sonarr, your completed downloads folder that sonarr monitors for files and your TV folder, where sonarr keeps and organises downloaded files.
 You should then setup a cronjob to run furk.py say every 6 hours and linker.py to run say every 24 hours, probably in the middle of the night, as per your preferences.
@@ -36,5 +36,5 @@ You should then setup a cronjob to run furk.py say every 6 hours and linker.py t
 
 Within sonarr, make sure to keep, 'monitor deleted episodes' unchecked and feel free to use indexers which can only download magnet links and full season torrents.
 
-Caution:
+<b>Caution:</b>
 Furk.net has safeguards to avoid you downloading too much within the cloud, without viewing it. Be careful to avoid reaching these thresholds by keeping lots of media in your cloud library, especially if you let it reload every few months as links begin to fail.
