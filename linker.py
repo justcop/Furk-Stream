@@ -61,7 +61,7 @@ if r.code in (200, 401):
     timeflagged = (flaggedforremoval[filename]['time'])
     logging.info("Flagged at " + timeflagged)
     elapsed = datetime.datetime.now() - parser.parse(timeflagged)
-    if elapsed > datetime.timedelta(hours=0):
+    if elapsed > datetime.timedelta(hours=23):
         flaggedlist.append(filename)
         logging.info("... It Has")
     else:
