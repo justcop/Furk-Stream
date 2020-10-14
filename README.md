@@ -30,11 +30,32 @@ A second script, 'linker.py' will check that all the strm still contain valid UR
 
 <b>Setup:</b>
 
-Setup should be relatively straight forward. rename the 'configs.py - template' to 'configs.py' and fill in to include your furk and sonarr api keys, together with you torrents folder , set as your torrent black hole in sonarr, your completed downloads folder that sonarr monitors for files and your TV folder, where sonarr keeps and organises downloaded files.
-You should then setup a cronjob to run furk.py say every 6 hours and linker.py to run say every 24 hours, probably in the middle of the night, as per your preferences.
+1. Setup should be relatively straight forward. rename the 'configs.py - template' to 'configs.py' and fill in to include your furk and sonarr api keys, together with you torrents folder , set as your torrent black hole in sonarr, your completed downloads folder that sonarr monitors for files and your TV folder, where sonarr keeps and organises downloaded files.
 
+2. You should then setup a cronjob to run furk.py say every 6 hours and linker.py to run say every 24 hours, probably in the middle of the night, as per your preferences.
+
+3. The script has the following dependencies which should be download with pip if needed
+
+urllib.request, urllib.error, urllib.parse
+os
+pickle
+datetime
+requests
+logging
+os
+glob
+requests
+json
+ast
+logging
+urllib
+time
+guessit
+bs4
+torrentool.api
 
 Within sonarr, make sure to keep, 'monitor deleted episodes' unchecked and feel free to use indexers which can only download magnet links and full season torrents.
 
 <b>Caution:</b>
+
 Furk.net has safeguards to avoid you downloading too much within the cloud, without viewing it. Be careful to avoid reaching these thresholds by keeping lots of media in your cloud library, especially if you let it reload every few months as links begin to fail.
