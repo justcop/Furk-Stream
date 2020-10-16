@@ -17,14 +17,14 @@ logging.basicConfig(handlers=[logging.FileHandler("/users/justcop/furk.log"),log
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
 
-flaggedforremoval = {}
-flaggedlist = []
+flagged = {}
+removing = []
 
 sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
 
 
 try:
- oldflaggedforremoval = pickle.load(open("flaggedforremoval.pkl", 'rb'))
+ oldflagged = pickle.load(open("flagged.pkl", 'rb'))
 except:
  pass
 
@@ -47,33 +47,34 @@ if r.code in (200, 401):
         filename = str(filename)
         time = str(datetime.datetime.now())
         try:
-         oldtime = oldflaggedforremoval[filename]['time']
+         oldtime = oldflagged[filename]['time']
          logging.info("File " + (filename.rsplit("/")[-1]) + " has already been flagged for removal at " + oldtime)
-         flaggedforremoval[filename] = {}
-         flaggedforremoval[filename]['time'] = oldtime
+         flagged[filename] = {}
+         flagged[filename]['time'] = oldtime
         except:
          logging.info("Flagging " + (filename.rsplit("/")[-1]) + " for removal as stream URL not currently valid. Will check again in 24 hours and remove if still not available")
-         flaggedforremoval[filename] = {}
-         flaggedforremoval[filename]['time'] = time
+         flagged[filename] = {}
+         flagged[filename]['time'] = time
 
- for filename in flaggedforremoval:
+ for filename in flagged:
     logging.info("Checking if current file " + (filename.rsplit("/")[-1]) + " has been flagged for more than 24 hours")
-    timeflagged = (flaggedforremoval[filename]['time'])
+    timeflagged = (flagged[filename]['time'])
     logging.info("Flagged at " + timeflagged)
     elapsed = datetime.datetime.now() - parser.parse(timeflagged)
     if elapsed > datetime.timedelta(hours=23):
-        flaggedlist.append(filename)
+        removing.append(filename)
         logging.info("... It Has")
     else:
         logging.info("... It Hasn't")
 
- for filename in flaggedlist:
+ for filename in removing:
     logging.info("Deleting" + (filename.rsplit("/")[-1]))
     os.remove(filename)
-    flaggedforremoval.pop(filename)
-    title = filedict.get('title')
-    seasonNumber = filedict.get('season')
-    episodeNumber = filedict.get('episode')
+    flagged.pop(filename)
+    show = guessit(filename)
+    title = show.get('title')
+    seasonNumber = show.get('season')
+    episodeNumber = show.get('episode')
 
 
 
@@ -89,7 +90,7 @@ if r.code in (200, 401):
     episodes = episodes.json()
     for data in episodes:
         if data['seasonNumber'] == seasonNumber and data['episodeNumber'] == episodeNumber:
-            data['monitored']=False
+            data['monitored']=True
             data = str(json.dumps(data))
             break
 
