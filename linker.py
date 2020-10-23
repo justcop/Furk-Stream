@@ -100,8 +100,8 @@ if r.code in (200, 401):
     requests.get(sonarr_url.format('wanted/missing'), data=data, headers = {"Content-Type": "application/json"})
 
 
- f = open("flaggedforremoval.pkl","wb")
- pickle.dump(flaggedforremoval,f)
+ f = open("flagged.pkl","wb")
+ pickle.dump(flagged,f)
  f.close()
 
 else:
