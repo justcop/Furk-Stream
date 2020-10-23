@@ -56,7 +56,7 @@ while True:
 
         try:
          files = data["files"][0]
-         logging.info("Torrent processing"+data["files"][0]["name"])
+         logging.info("Processing "+data["files"][0]["name"])
         except:
             try:
                 if data["torrent"]["dl_status"] == "active" or "finished":
