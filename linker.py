@@ -21,7 +21,7 @@ logging.basicConfig(handlers=[logging.StreamHandler()],format='%(asctime)s %(lev
 
 flagged = {}
 removing = []
-removed = 1
+removed = 0
 
 sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
 
@@ -107,7 +107,7 @@ if r.code in (200, 401):
  f.close()
  
  if removed:   
-    logging.info("Removed " + str(removed) + "dead links; Sonarr will be alerted and replacements downloaded")
+    logging.info("Removed " + str(removed) + " dead link(s); Sonarr will be alerted and replacements downloaded")
  else:
     logging.info("No files removed")
 
