@@ -59,17 +59,18 @@ if r.code in (200, 401):
          flagged[filename]['time'] = time
 
  for filename in flagged:
-    logging.info("Checking if current file " + (filename.rsplit("/")[-1]) + " has been flagged for more than 24 hours")
+    logging.debug("Checking if current file " + (filename.rsplit("/")[-1]) + " has been flagged for more than 24 hours")
     timeflagged = (flagged[filename]['time'])
     logging.info("Flagged at " + timeflagged)
     elapsed = datetime.datetime.now() - parser.parse(timeflagged)
     if elapsed > datetime.timedelta(hours=23):
         removing.append(filename)
-        logging.info("... It Has")
+        logging.debug("... It Has")
     else:
-        logging.info("... It Hasn't")
+        logging.debug("... It Hasn't")
 
  for filename in removing:
+    removed +=1
     logging.info("Deleting" + (filename.rsplit("/")[-1]))
     os.remove(filename)
     flagged.pop(filename)
@@ -103,6 +104,11 @@ if r.code in (200, 401):
  f = open("flagged.pkl","wb")
  pickle.dump(flagged,f)
  f.close()
+ 
+ if removed:   
+    logging.info("Removed " + str(removed) + "dead links; Sonarr will be alerted and replacements downloaded"
+ else:
+    logging.info("No files removed"
 
 else:
     logging.error("Unable to connect to Furk. Is computer connected to internet, or furk down?")
