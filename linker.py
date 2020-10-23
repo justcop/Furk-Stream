@@ -21,6 +21,7 @@ logging.basicConfig(handlers=[logging.StreamHandler()],format='%(asctime)s %(lev
 
 flagged = {}
 removing = []
+removed = 0
 
 sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
 
@@ -105,7 +106,7 @@ if r.code in (200, 401):
  pickle.dump(flagged,f)
  f.close()
  
- if 'removed':   
+ if removed:   
     logging.info("Removed " + str(removed) + "dead links; Sonarr will be alerted and replacements downloaded")
  else:
     logging.info("No files removed")
