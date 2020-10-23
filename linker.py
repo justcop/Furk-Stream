@@ -1,3 +1,5 @@
+#!/usr/lib/python3.8
+
 import urllib.request, urllib.error, urllib.parse
 import os
 import pickle
