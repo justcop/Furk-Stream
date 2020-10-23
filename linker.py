@@ -109,7 +109,7 @@ if r.code in (200, 401):
  if removed:   
     logging.info("Removed " + str(removed) + " dead link(s); Sonarr will be alerted and replacements downloaded")
  else:
-    logging.info("No files removed")
+    logging.info("No persistently dead links found")
 
 else:
     logging.error("Unable to connect to Furk. Is computer connected to internet, or furk down?")
