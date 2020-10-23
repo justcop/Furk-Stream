@@ -21,7 +21,7 @@ logging.basicConfig(handlers=[logging.StreamHandler()],format='%(asctime)s %(lev
 
 flagged = {}
 removing = []
-removed = 0
+removed = 1
 
 sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
 
