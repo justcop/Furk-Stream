@@ -2,6 +2,7 @@
 
 import pickle
 import json
+import requests
 from configs import furk_api
 
 def ordered(obj):
