@@ -24,5 +24,5 @@ else:
  print("false")
 
 f = open("poll.pkl","wb")
-pickle.dump((poll),f)
+pickle.dump((data),f)
 f.close()
