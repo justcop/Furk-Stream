@@ -15,7 +15,7 @@ print("data")
 
 try:
  poll = pickle.load(open("poll.pkl", 'rb'))
-except
+except:
  open("poll.pkl","wb")
 
 
