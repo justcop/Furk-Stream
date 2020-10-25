@@ -3,13 +3,10 @@
 import pickle
 import json
 import requests
+import os
 from configs import furk_api
 
-print(furk_api)
-
-
-base_url = 'https://www.furk.net/api/ping?api_key={}'
-data = (requests.get(base_url.format(furk_api))).json()
+base_url = 'https://www.furk.net/api/ping'
 data = (requests.get(base_url.format(furk_api))).json()
 
 try:
@@ -27,5 +24,5 @@ else:
  print("false")
 
 f = open("poll.pkl","wb")
-pickle.dump(poll,f)
+pickle.dump(str(poll),f)
 f.close()
