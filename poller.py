@@ -15,9 +15,6 @@ except:
  open("poll.pkl","wb")
  poll = ""
 
-print(str(data) + "/n" + str(poll))
-
-
 if data == poll:
  print("true")
 else:
