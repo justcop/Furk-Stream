@@ -19,7 +19,7 @@ data = (requests.get(base_url.format(furk_api))).json()
 try:
  poll = pickle.load(open("poll.pkl", 'rb'))
 
-ordered(data) == ordered(poll):
+ordered(data) == ordered(poll)
 
 f = open("poll.pkl","wb")
 pickle.dump(poll,f)
