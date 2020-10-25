@@ -11,13 +11,15 @@ data = (requests.get(base_url.format(furk_api))).json()
 data = (requests.get(base_url.format(furk_api))).json()
 
 
-print("data")
+
 
 try:
  poll = pickle.load(open("poll.pkl", 'rb'))
 except:
  open("poll.pkl","wb")
  poll = ""
+
+ print(data + "/n" + poll)
 
 
 if data == poll:
