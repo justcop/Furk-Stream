@@ -19,7 +19,7 @@ poll = pickle.load(open("poll.pkl", 'rb'))
 
 if ordered(data) == ordered(poll):
  print("no change")
-else
+else:
  print("change")
 
 f = open("poll.pkl","wb")
