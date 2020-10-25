@@ -16,7 +16,8 @@ def ordered(obj):
 base_url = 'https://www.furk.net/api/ping&api_key={}'
 data = (requests.get(base_url.format(furk_api))).json()
 
-poll = pickle.load(open("poll.pkl", 'rb'))
+try:
+ poll = pickle.load(open("poll.pkl", 'rb'))
 
 if ordered(data) == ordered(poll):
  print("no change")
