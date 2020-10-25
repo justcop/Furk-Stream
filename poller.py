@@ -10,9 +10,6 @@ base_url = 'https://www.furk.net/api/ping&api_key={}'
 data = (requests.get(base_url.format(furk_api))).json()
 data = (requests.get(base_url.format(furk_api))).json()
 
-print("data is"+data)
-
-
 try:
  poll = pickle.load(open("poll.pkl", 'rb'))
 except:
