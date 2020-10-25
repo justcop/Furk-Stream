@@ -17,6 +17,7 @@ try:
  poll = pickle.load(open("poll.pkl", 'rb'))
 except:
  open("poll.pkl","wb")
+ poll = ""
 
 
 if data == poll:
