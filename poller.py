@@ -19,7 +19,7 @@ except:
  open("poll.pkl","wb")
  poll = ""
 
- print(data + "/n" + poll)
+print(str(data) + "/n" + str(poll))
 
 
 if data == poll:
