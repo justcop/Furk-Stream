@@ -6,7 +6,7 @@ import requests
 import os
 from configs import furk_api
 
-base_url = 'https://www.furk.net/api/ping'
+base_url = 'https://www.furk.net/api/ping?api_key={}'
 data = (requests.get(base_url.format(furk_api))).json()
 
 try:
@@ -24,5 +24,5 @@ else:
  print("false")
 
 f = open("poll.pkl","wb")
-pickle.dump(str(poll),f)
+pickle.dump(poll),f)
 f.close()
