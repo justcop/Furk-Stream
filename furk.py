@@ -66,7 +66,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                 logging.error(str(data))
                 continue
             else:
-                logging.warning("furk file is "+str(filename)+" not yet ready for download")
+                logging.warning("furk file is "+(filename.rsplit("/")[-1])+" not yet ready for download")
                 retry += 1
         else:
           try:
