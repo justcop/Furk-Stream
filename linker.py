@@ -117,6 +117,6 @@ else:
     logging.error("Unable to connect to Furk. Is computer connected to internet, or furk down?")
     
 for folder in os.listdir(completed_path):
- g = os.path.getmtime(completedpath+"/"+folder)
+ g = os.path.getmtime(completed_path+"/"+folder)
  print(folder)
  print(g)
