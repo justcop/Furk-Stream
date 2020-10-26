@@ -119,5 +119,5 @@ else:
     
 for folder in os.listdir(completed_path):
  elapsed = datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(os.path.getmtime(completed_path+"/"+folder))  
-  if elapsed > datetime.timedelta(hours=3):
+ if elapsed > datetime.timedelta(hours=3):
     shutil.rmtree(completed_path+"/"+folder)
