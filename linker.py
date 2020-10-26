@@ -118,7 +118,7 @@ else:
     
 for folder in os.listdir(completed_path):
  g = datetime.datetime.utcfromtimestamp(os.path.getmtime(completed_path+"/"+folder)).strftime('%Y-%m-%d %H:%M:%S')
- elapsed = datetime.datetime.utcnow() - datetime.datetime(g)
+ elapsed = datetime.datetime.utcnow() - (os.path.getmtime(completed_path+"/"+folder))
  print(str(elapsed))
  print(folder)
  print(g)
