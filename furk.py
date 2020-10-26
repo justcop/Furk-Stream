@@ -115,13 +115,3 @@ while True:
                         logging.warning("Unable to update sonarr")
 
     logging.info(str(processed) + " files have been processed.")
-
-#    if timeout == 6:
-#        logging.info("Timed-out, will check again during next scheduled run")
-#        break
-#    elif retry > 0:
-#        timeout += 1
-#        logging.info("Repeating check for remaining episodes in 10 minutes, allowing time for Furk to download")
-#        time.sleep(600)
-#    else:
-#        break
