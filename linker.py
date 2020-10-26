@@ -15,7 +15,7 @@ from configs import TV_path
 from configs import sonarr_key
 from configs import sonarr_address
 
-logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),logging.StreamHandler()],format='%(asctime)s %(levelname)-8s %(message)s',
+logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),logging.StreamHandler()],format='%(asctime)s %(levelname)-8s(Furk Link-Check)%(message)s',
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
 
