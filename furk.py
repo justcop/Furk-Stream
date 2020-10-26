@@ -30,19 +30,19 @@ sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
 
 timeout = 0
 
-while True:
 
-    processed = 0
-    retry = 0
 
-    for filename in glob.glob(os.path.join(torrents_path, '*.torrent')):
+processed = 0
+retry = 0
+
+for filename in glob.glob(os.path.join(torrents_path, '*.torrent')):
       torrent = Torrent.from_file(filename)
       with open(filename + ".magnet", 'w') as f:
        f.write(torrent.magnet_link)
       os.remove(filename)
 
 
-    for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
+for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
       with open(filename, 'r') as f:
         magnet = f.read()
 
@@ -113,5 +113,5 @@ while True:
                         logging.info(response['body']['completionMessage'])
                     finally:
                         logging.warning("Unable to update sonarr")
-
-    logging.info(str(processed) + " files have been processed.")
+                        
+logging.info(str(processed) + " files have been processed.")
