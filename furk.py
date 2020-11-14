@@ -76,7 +76,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
             retry += 1
           else:
             xspf = xspfurl.read()
-            soup = BeautifulSoup(xspf, "lxml")
+            soup = BeautifulSoup(xspf, "html5lib")
             title = soup('title')
             strmurl = soup('location')
 
