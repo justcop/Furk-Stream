@@ -20,7 +20,7 @@ from configs import TV_path
 from configs import sonarr_key
 from configs import sonarr_address
 
-logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk) %(message)s',
+logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),logging.FileHandler("furk.log"),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk) %(message)s',
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
 
@@ -76,7 +76,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
             retry += 1
           else:
             xspf = xspfurl.read()
-            soup = BeautifulSoup(xspf, "lxml")
+            soup = BeautifulSoup(xspf, "html5lib")
             title = soup('title')
             strmurl = soup('location')
 
