@@ -1,7 +1,8 @@
 furk_api = ''
 torrents_path = ''
 completed_path = ''
-TV_path = ''
+TV_path = '' 
+media_path = ''
 
 sonarr_key = ''
 sonarr_address = ''
