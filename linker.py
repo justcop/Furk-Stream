@@ -12,7 +12,7 @@ from pathlib import Path
 from dateutil import parser
 from guessit import guessit
 
-from configs import TV_path
+from configs import media_path
 from configs import sonarr_key
 from configs import sonarr_address
 from configs import completed_path
@@ -38,7 +38,7 @@ try:
 except urllib.error.URLError as e:
     r = e
 if r.code in (200, 401):
- for filename in Path(TV_path).rglob('*.strm'):
+ for filename in Path(media_path).rglob('*.strm'):
   with open(filename, 'r') as f:
     url = f.read()
     f.close()
