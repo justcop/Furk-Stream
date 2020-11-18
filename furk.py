@@ -107,6 +107,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                     logging.info("Completed processing "+data["files"][0]["name"]+"/n")
                     os.remove(filename)
                     data = {'name':'DownloadedEpisodesScan','path':path}
+                    os.system('chown -R 1001:1002 /share/downloads')
                     response = (requests.post(sonarr_url.format('command'),json=data)).json()
                 except:
                     try:
