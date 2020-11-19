@@ -36,7 +36,7 @@ sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
 current_time = time.time()
 for f in os.listdir(torrents_path):
     creation_time = os.path.getctime(torrents_path+"/"+f)
-    logging.info(f+"is "+str(int(current_time - creation_time) // (24 * 3600))+" days old")
+    logging.info(f+" is "+str(int(current_time - creation_time) // (24 * 3600))+" days old")
     if (current_time - creation_time) // (24 * 3600) >= 7:
         logging.info("Deleting "+f+" as it is over a week old")
         os.unlink(torrents_path+"/"+f)
