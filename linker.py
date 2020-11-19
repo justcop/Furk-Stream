@@ -8,6 +8,7 @@ import requests
 import logging
 import shutil
 
+
 from pathlib import Path
 from dateutil import parser
 from guessit import guessit
@@ -31,11 +32,12 @@ removed = 0
 sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
 
 #removes any torrents that have not downloaded after one week
-current_time = time.time()
+current_time = datetime.datetime.now()
 for f in os.listdir(torrents_path):
     creation_time = os.path.getctime(f)
     if (current_time - creation_time) // (24 * 3600) >= 7:
         os.unlink(f)
+    print(str(current_time - creation_time))
 
 try:
  oldflagged = pickle.load(open("flagged.pkl", 'rb'))
