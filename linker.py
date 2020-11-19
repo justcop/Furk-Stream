@@ -18,11 +18,11 @@ from configs import sonarr_address
 from configs import completed_path
 
 try:
-    os.remove("furk.log")
+    os.remove("/config/furk.log")
 except:
     pass
 
-logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),logging.FileHandler("furk.log"),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s',
+logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),logging.FileHandler("/config/furk.log"),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s',
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
 
