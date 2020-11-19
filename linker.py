@@ -34,7 +34,7 @@ sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
 
 #removes any torrents that have not downloaded after one week
 current_time = time.time()
-for f in os.listdir():
+for f in os.listdir(torrents_path):
     creation_time = os.path.getctime(f)
     if (current_time - creation_time) // (24 * 3600) >= 7:
         os.unlink(f)
