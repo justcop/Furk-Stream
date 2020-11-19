@@ -41,12 +41,14 @@ for filename in glob.glob(os.path.join(torrents_path, '*.torrent')):
       with open(filename + ".magnet", 'w') as f:
        f.write(torrent.magnet_link)
       os.remove(filename)
+        
 
 
 for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
       with open(filename, 'r') as f:
         magnet = f.read()
-
+        logging.info("Uploading "+f+" to Furk")
+        
         try:
             base_url = 'https://www.furk.net/api/dl/add?url={}&api_key={}'
             data = (requests.get(base_url.format(magnet,furk_api))).json()
@@ -57,7 +59,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
 
         try:
          files = data["files"][0]
-         logging.info("Processing "+data["files"][0]["name"])
+         logging.info("Checking "+data["files"][0]["name"]+" in Furk")
         except:
             try:
                 if data["torrent"]["dl_status"] == "active" or "finished":
