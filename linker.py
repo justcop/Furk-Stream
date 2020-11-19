@@ -17,6 +17,7 @@ from configs import media_path
 from configs import sonarr_key
 from configs import sonarr_address
 from configs import completed_path
+from configs import torrents_path
 
 
 logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),TimedRotatingFileHandler("/config/furk.log", when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s',
@@ -29,6 +30,12 @@ removed = 0
 
 sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
 
+#removes any torrents that have not downloaded after one week
+current_time = time.time()
+for f in os.listdir(torrents_path):
+    creation_time = os.path.getctime(f)
+    if (current_time - creation_time) // (24 * 3600) >= 7:
+        os.unlink(f)
 
 try:
  oldflagged = pickle.load(open("flagged.pkl", 'rb'))
