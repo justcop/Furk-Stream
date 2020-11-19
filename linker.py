@@ -11,11 +11,13 @@ import shutil
 from pathlib import Path
 from dateutil import parser
 from guessit import guessit
+from logging.handlers import TimedRotatingFileHandler
 
 from configs import media_path
 from configs import sonarr_key
 from configs import sonarr_address
 from configs import completed_path
+
 
 logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),TimedRotatingFileHandler("/config/furk.log", when="midnight", interval=1, backupcount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s',
     level=logging.INFO,
