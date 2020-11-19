@@ -18,7 +18,7 @@ from configs import sonarr_address
 from configs import completed_path
 
 try:
-    os.remove("furk.log"
+    os.remove("furk.log")
 except:
     pass
 
