@@ -33,6 +33,7 @@ removed = 0
 sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
 
 #removes any torrents that have not downloaded after one week
+logging.info("Checking age of any undownloaded torrents")
 current_time = time.time()
 for f in os.listdir(torrents_path):
     creation_time = os.path.getctime(torrents_path+"/"+f)
@@ -46,6 +47,7 @@ try:
 except:
  pass
 
+logging.info("Checking integrity of any strm files currently in library")
 try:
     r = urllib.request.urlopen("https://www.furk.net/")
 except urllib.error.URLError as e:
