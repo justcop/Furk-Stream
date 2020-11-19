@@ -39,6 +39,7 @@ for f in os.listdir(torrents_path):
     if (current_time - creation_time) // (24 * 3600) >= 7:
         os.unlink(f)
     print(str(current_time - creation_time))
+    print(f)
 
 try:
  oldflagged = pickle.load(open("flagged.pkl", 'rb'))
