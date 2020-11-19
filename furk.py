@@ -47,7 +47,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.torrent')):
 for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
       with open(filename, 'r') as f:
         magnet = f.read()
-        logging.info("Uploading "+f+" to Furk")
+        logging.info("Uploading "+str(f)+" to Furk")
         
         try:
             base_url = 'https://www.furk.net/api/dl/add?url={}&api_key={}'
