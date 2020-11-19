@@ -8,6 +8,7 @@ import ast
 import logging
 import urllib
 import time
+import html5lib
 
 from guessit import guessit
 from bs4 import BeautifulSoup
