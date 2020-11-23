@@ -123,8 +123,6 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                     if metadata.get('type') == 'movie':
                         data = {'name':'DownloadedMoviesScan','path':path}
                         response = (requests.post(radarr_url.format('command'),json=data)).json()
-                    logging.info(response['body']['completionMessage'])
-
                 except:
                     try:
                         logging.info(response['body']['completionMessage'])
