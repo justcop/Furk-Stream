@@ -121,7 +121,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                         data = {'name':'DownloadedEpisodesScan','path':path}
                         response = (requests.post(sonarr_url.format('command'),json=data)).json()
                     if metadata.get('type') is 'movie':
-                         data = {'name':'DownloadedMoviesScan','path':path}
+                        data = {'name':'DownloadedMoviesScan','path':path}
                         response = (requests.post(radarr_url.format('command'),json=data)).json()
                 except:
                     try:
