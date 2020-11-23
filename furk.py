@@ -114,7 +114,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                 logging.error(e)
             else:
                 try:
-                    logging.info("Completed processing "+data["files"][0]["name"]+"/n")
+                    logging.info("Completed processing "+data["files"][0]["name"])
                     os.remove(filename)
                     os.system('chown -R 1001:1002 /share/downloads')
                     if metadata.get('type') == 'episode':
