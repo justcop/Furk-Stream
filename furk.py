@@ -90,12 +90,12 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                 for x in range(len(strmurl)):
                     try:
                         metadata = guessit(str(title[x+1].text))
-                        if metadata.get('type') is 'episode':
+                        if metadata.get('type') == 'episode':
                             path = completed_path + '/' + str(metadata.get('title')) + ' - ' + 'S' + str(metadata.get('season')) + "E" + str(metadata.get('episode')) + ' - [' + str(metadata.get('source')) + '-' + str(metadata.get('screen_size')) + ']'
                             episode = str(metadata.get('title')) + ' - ' + 'S' + str(metadata.get('season')) + 'E' + str(metadata.get('episode')) + ' - [' + str(metadata.get('source')) + ' - ' + str(metadata.get('screen_size')) + ']'
                             if len(strmurl) > 1:
                                 logging.info("Episode processing " + episode)
-                        if metadata.get('type') is 'movie':
+                        if metadata.get('type') == 'movie':
                             path = completed_path + '/' + str(metadata.get('title')) + ' - [' + str(metadata.get('source')) + '-' + str(metadata.get('screen_size')) + ']'
                             episode = str(metadata.get('title')) + ' - [' + str(metadata.get('source')) + ' - ' + str(metadata.get('screen_size')) + ']'    
                         try:
@@ -117,10 +117,10 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                     logging.info("Completed processing "+data["files"][0]["name"]+"/n")
                     os.remove(filename)
                     os.system('chown -R 1001:1002 /share/downloads')
-                    if metadata.get('type') is 'episode':
+                    if metadata.get('type') == 'episode':
                         data = {'name':'DownloadedEpisodesScan','path':path}
                         response = (requests.post(sonarr_url.format('command'),json=data)).json()
-                    if metadata.get('type') is 'movie':
+                    if metadata.get('type') == 'movie':
                         data = {'name':'DownloadedMoviesScan','path':path}
                         response = (requests.post(radarr_url.format('command'),json=data)).json()
                 except:
