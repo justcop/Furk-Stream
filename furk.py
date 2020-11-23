@@ -87,10 +87,14 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                 for x in range(len(strmurl)):
                     try:
                         metadata = guessit(str(title[x+1].text))
-                        path = completed_path + '/' + str(metadata.get('title')) + ' - ' + 'S' + str(metadata.get('season')) + "E" + str(metadata.get('episode')) + ' - [' + str(metadata.get('source')) + '-' + str(metadata.get('screen_size')) + ']'
-                        episode = str(metadata.get('title')) + ' - ' + 'S' + str(metadata.get('season')) + 'E' + str(metadata.get('episode')) + ' - [' + str(metadata.get('source')) + ' - ' + str(metadata.get('screen_size')) + ']'
-                        if len(strmurl) > 1:
-                            logging.info("Episode processing " + episode)
+                        if metadata.get('type') is 'episode':
+                            path = completed_path + '/' + str(metadata.get('title')) + ' - ' + 'S' + str(metadata.get('season')) + "E" + str(metadata.get('episode')) + ' - [' + str(metadata.get('source')) + '-' + str(metadata.get('screen_size')) + ']'
+                            episode = str(metadata.get('title')) + ' - ' + 'S' + str(metadata.get('season')) + 'E' + str(metadata.get('episode')) + ' - [' + str(metadata.get('source')) + ' - ' + str(metadata.get('screen_size')) + ']'
+                            if len(strmurl) > 1:
+                                logging.info("Episode processing " + episode)
+                        if metadata.get('type') is 'movie':
+                            path = completed_path + '/' + str(metadata.get('title')) + ' - [' + str(metadata.get('source')) + '-' + str(metadata.get('screen_size')) + ']'
+                            episode = str(metadata.get('title')) + ' - [' + str(metadata.get('source')) + ' - ' + str(metadata.get('screen_size')) + ']'    
                         try:
                             os.mkdir(path)
                         except FileExistsError:
@@ -116,6 +120,6 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                     try:
                         logging.info(response['body']['completionMessage'])
                     finally:
-                        logging.warning("Unable to update sonarr")
+                        logging.warning("Unable to update sonarr/radarr")
                         
 logging.info(str(processed) + " files have been processed.")
