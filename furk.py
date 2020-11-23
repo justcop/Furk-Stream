@@ -20,6 +20,8 @@ from configs import completed_path
 from configs import TV_path
 from configs import sonarr_key
 from configs import sonarr_address
+from configs import radarr_key
+from configs import radarr_address
 
 logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),logging.FileHandler("/config/furk.log"),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk) %(message)s',
     level=logging.INFO,
@@ -28,6 +30,7 @@ logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),
 
 
 sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
+radarr_url = radarr_address + '/api/{}?apikey=' + radarr_key
 
 timeout = 0
 
@@ -113,9 +116,13 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                 try:
                     logging.info("Completed processing "+data["files"][0]["name"]+"/n")
                     os.remove(filename)
-                    data = {'name':'DownloadedEpisodesScan','path':path}
                     os.system('chown -R 1001:1002 /share/downloads')
-                    response = (requests.post(sonarr_url.format('command'),json=data)).json()
+                    if metadata.get('type') is 'episode':
+                        data = {'name':'DownloadedEpisodesScan','path':path}
+                        response = (requests.post(sonarr_url.format('command'),json=data)).json()
+                    if metadata.get('type') is 'movie':
+                         data = {'name':'DownloadedMoviesScan','path':path}
+                        response = (requests.post(radarr_url.format('command'),json=data)).json()
                 except:
                     try:
                         logging.info(response['body']['completionMessage'])
