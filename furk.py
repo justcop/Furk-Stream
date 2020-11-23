@@ -97,7 +97,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                                 logging.info("Episode processing " + episode)
                         if metadata.get('type') == 'movie':
                             path = completed_path + '/' + str(metadata.get('title')) + ' - [' + str(metadata.get('source')) + '-' + str(metadata.get('screen_size')) + ']'
-                            episode = str(metadata.get('title')) + ' - [' + str(metadata.get('source')) + ' - ' + str(metadata.get('screen_size')) + ']'    
+                            episode = ((filename.rsplit("/")[-1]).rsplit(".",1)[0])
                         try:
                             os.mkdir(path)
                         except FileExistsError:
