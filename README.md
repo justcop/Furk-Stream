@@ -59,3 +59,8 @@ Within sonarr, make sure to keep, 'monitor deleted episodes' unchecked and feel 
 <b>Caution:</b>
 
 Furk.net has safeguards to avoid you downloading too much within the cloud, without viewing it. Be careful to avoid reaching these thresholds by keeping lots of media in your cloud library, especially if you let it reload every few months as links begin to fail.
+
+
+EDIT
+
+This is now setup to work with movies using radarr too. 
