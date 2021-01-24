@@ -56,11 +56,13 @@ for filename in Path(media_path).rglob('*.strm'):
     logging.info(str(url))
     try:
         r = requests.get(url)
+        r = str(r.read())
     except urllib.error.URLError as e:
         r = e
-    logging.info(str(r.read())
+    logging.info(r)
     #encoding = r.info().get_content_charset('utf8')
-    if "file not found" in str(r.read()):
+    
+    if "file not found" in r:
         filename = str(filename)
         time = str(datetime.datetime.now())
         try:
