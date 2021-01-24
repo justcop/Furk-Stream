@@ -57,7 +57,8 @@ for filename in Path(media_path).rglob('*.strm'):
     logging.info(str(url))
     try:
         r = urllib.request.urlopen(url)
-        r = str(r.text())
+        r = BeautifulSoup(r, "html5lib")
+        r = soup.get_text()
     except urllib.error.URLError as e:
         r = e
     logging.info(r)
