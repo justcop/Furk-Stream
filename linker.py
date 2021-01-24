@@ -8,12 +8,11 @@ import requests
 import logging
 import shutil
 import time
-
+import json
 
 from pathlib import Path
 from dateutil import parser
 from guessit import guessit
-from bs4 import BeautifulSoup
 from logging.handlers import TimedRotatingFileHandler
 
 from configs import media_path
