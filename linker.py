@@ -59,7 +59,7 @@ for filename in Path(media_path).rglob('*.strm'):
         r = requests.head(url)
     except urllib.error.URLError as e:
         r = e
-    logging.info(resp.headers)
+    logging.info(r.headers)
     #encoding = r.info().get_content_charset('utf8')
     
     if "file not found" in r:
