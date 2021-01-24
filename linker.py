@@ -48,9 +48,6 @@ except:
  pass
 
 logging.info("Checking integrity of any strm files currently in library")
-for filename in (Path('/rootmmm
-
-
 for filename in in os.listdir(media_path):
  logging.info("." + filename)
  with open(filename, 'r') as f:
