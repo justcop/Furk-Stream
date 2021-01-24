@@ -55,9 +55,8 @@ for filename in Path(media_path).rglob('*.strm'):
     url = f.read()
     f.close()
     logging.info(str(filename))
-    try:
-        r = json.loads(r.headers(requests.head(url)))
-        logging.info(str(r))
+    r = json.loads(r.headers(requests.head(url)))
+    logging.info(str(r))
     #encoding = r.info().get_content_charset('utf8')
     
     if r['Warning'] == 'file_not_found:
