@@ -54,7 +54,7 @@ for filename in Path(media_path).rglob('*.strm'):
     url = f.read()
     f.close()
     logging.info(str(filename))
-    r = json.loads(r.headers(requests.head(url)))
+    r = json.loads(headers(requests.head(url)))
     logging.info(str(r))
     #encoding = r.info().get_content_charset('utf8')
     
