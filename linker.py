@@ -48,12 +48,7 @@ except:
  pass
 
 logging.info("Checking integrity of any strm files currently in library")
-try:
-    r = urllib.request.urlopen("https://www.furk.net/")
-except urllib.error.URLError as e:
-    r = e
-if r.code in (200, 401):
- for filename in Path(media_path).rglob('*.strm'):
+for filename in Path(media_path).rglob('*.strm'):
   with open(filename, 'r') as f:
     url = f.read()
     f.close()
