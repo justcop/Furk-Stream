@@ -48,7 +48,7 @@ except:
  pass
 
 logging.info("Checking integrity of any strm files currently in library")
-for filename in Path(media_path).rglob('*.strm'):
+for filename in path(/root/share/storage).rglob('*.strm'):
  logging.info("." + filename)
  with open(filename, 'r') as f:
     url = f.read()
