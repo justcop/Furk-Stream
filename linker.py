@@ -56,7 +56,7 @@ for filename in Path(media_path).rglob('*.strm'):
     f.close()
     logging.info(str(url))
     try:
-        r = urllib.requests.urlopen(url)
+        r = urllib.request.urlopen(url)
         r = str(r.text())
     except urllib.error.URLError as e:
         r = e
