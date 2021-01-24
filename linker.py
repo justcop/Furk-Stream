@@ -44,14 +44,13 @@ for f in os.listdir(torrents_path):
 
 logging.info("Checking integrity of any strm files currently in library")
 for filename in Path(media_path).rglob('*.strm'):
- logging.info(str(filename)) 
  with open(filename, 'r') as f:
     url = f.read()
     f.close()
     r = requests.head(url)
     try:
       if r.headers['warning'] == 'file_not_found':
-        logging.info("Deleting expired stream" + (filename.rsplit("/")[-1]))
+        logging.info("Deleting expired stream" + (str(filename.rsplit("/")[-1]))) 
         os.remove(filename)
         show = guessit(filename)
         title = show.get('title')
@@ -77,7 +76,7 @@ for filename in Path(media_path).rglob('*.strm'):
       requests.get(sonarr_url.format('wanted/missing'), data=data, headers = {"Content-Type": "application/json"})  
 
     except KeyError:
-     logging.info("Keeping active stream " + filename.rsplit("/")[-1])
+     logging.info("Keeping active stream " + str(filename.rsplit("/")[-1])) 
  
 
 
