@@ -71,7 +71,7 @@ for filename in Path(media_path).rglob('*.strm'):
          flagged[filename] = {}
          flagged[filename]['time'] = time
 
- for filename in flagged:
+for filename in flagged:
     logging.debug("Checking if current file " + (filename.rsplit("/")[-1]) + " has been flagged for more than 24 hours")
     timeflagged = (flagged[filename]['time'])
     logging.info("Flagged at " + timeflagged)
@@ -82,7 +82,7 @@ for filename in Path(media_path).rglob('*.strm'):
     else:
         logging.debug("... It Hasn't")
 
- for filename in removing:
+for filename in removing:
     removed +=1
     logging.info("Deleting" + (filename.rsplit("/")[-1]))
     os.remove(filename)
@@ -114,18 +114,15 @@ for filename in Path(media_path).rglob('*.strm'):
     requests.get(sonarr_url.format('wanted/missing'), data=data, headers = {"Content-Type": "application/json"})
 
 
- f = open("flagged.pkl","wb")
- pickle.dump(flagged,f)
- f.close()
+f = open("flagged.pkl","wb")
+pickle.dump(flagged,f)
+f.close()
  
- if removed:   
+if removed:   
     logging.info("Removed " + str(removed) + " dead link(s); Sonarr will be alerted and replacements downloaded")
- else:
+else:
     logging.info("No persistently dead links found")
     open("test","wb")
-
-else:
-    logging.error("Unable to connect to Furk. Is computer connected to internet, or furk down?")
     
 for folder in os.listdir(completed_path):
  elapsed = datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(os.path.getmtime(completed_path+"/"+folder))  
