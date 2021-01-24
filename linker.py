@@ -47,9 +47,10 @@ try:
 except:
  pass
 
-logging.info("... Checking integrity of any strm files currently in library")
+logging.info("Checking integrity of any strm files currently in library")
 for filename in Path(media_path).rglob('*.strm'):
-  with open(filename, 'r') as f:
+ logging.info("." + filename)
+ with open(filename, 'r') as f:
     url = f.read()
     f.close()
     logging.info("." + url)
