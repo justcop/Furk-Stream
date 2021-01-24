@@ -52,6 +52,7 @@ for filename in Path(media_path).rglob('*.strm'):
   with open(filename, 'r') as f:
     url = f.read()
     f.close()
+    print(url)
     try:
         r = urllib.request.urlopen(url)
     except urllib.error.URLError as e:
