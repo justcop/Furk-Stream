@@ -49,11 +49,11 @@ except:
 
 logging.info("Checking integrity of any strm files currently in library")
 for filename in Path(media_path).rglob('*.strm'):
- logging.info("." + filename)
+ logging.info(str(filename)) 
  with open(filename, 'r') as f:
     url = f.read()
     f.close()
-    logging.info("." + url)
+    logging.info(str(url))
     try:
         r = urllib.request.urlopen(url)
     except urllib.error.URLError as e:
