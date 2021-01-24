@@ -60,7 +60,7 @@ for filename in Path(media_path).rglob('*.strm'):
         r = e
     logging.info(str(r.read))
 
-    if "file not found" in r.read:
+    if "file not found" in str(r.read):
         filename = str(filename)
         time = str(datetime.datetime.now())
         try:
