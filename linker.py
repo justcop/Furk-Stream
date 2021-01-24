@@ -54,15 +54,13 @@ for filename in Path(media_path).rglob('*.strm'):
  with open(filename, 'r') as f:
     url = f.read()
     f.close()
-    logging.info(str(url))
+    logging.info(str(filename))
     try:
-        r = requests.head(url)
-    except urllib.error.URLError as e:
-        r = e
-    logging.info(r.headers)
+        r = json.loads(r.headers(requests.head(url)))
+    logging.info(str(r))
     #encoding = r.info().get_content_charset('utf8')
     
-    if "file not found" in r:
+    if r['Warning'] == 'file_not_found:
         filename = str(filename)
         time = str(datetime.datetime.now())
         try:
