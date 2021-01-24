@@ -59,7 +59,7 @@ for filename in Path(media_path).rglob('*.strm'):
     logging.info(str(r))
     #encoding = r.info().get_content_charset('utf8')
     
-    if r['Warning'] == 'file_not_found:
+    if r['Warning'] == 'file_not_found':
         filename = str(filename)
         time = str(datetime.datetime.now())
         try:
