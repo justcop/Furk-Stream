@@ -42,11 +42,6 @@ for f in os.listdir(torrents_path):
         logging.info("Deleting "+f+" as it is over a week old")
         os.unlink(torrents_path+"/"+f)
 
-try:
- oldflagged = pickle.load(open("flagged.pkl", 'rb'))
-except:
- pass
-
 logging.info("Checking integrity of any strm files currently in library")
 for filename in Path(media_path).rglob('*.strm'):
  logging.info(str(filename)) 
@@ -56,72 +51,40 @@ for filename in Path(media_path).rglob('*.strm'):
     r = requests.head(url)
     try:
       if r.headers['warning'] == 'file_not_found':
-        filename = str(filename)
-        time = str(datetime.datetime.now())
-        try:
-         oldtime = oldflagged[filename]['time']
-         logging.info("File " + (filename.rsplit("/")[-1]) + " has already been flagged for removal at " + oldtime)
-         flagged[filename] = {}
-         flagged[filename]['time'] = oldtime
-        except:
-         logging.info("Flagging " + (filename.rsplit("/")[-1]) + " deleted as no longer valid")
-         flagged[filename] = {}
-         flagged[filename]['time'] = time
-    except KeyError:
-     logging.info(str(filename) + "is valid")
-
-for filename in flagged:
-    logging.debug("Checking if current file " + (filename.rsplit("/")[-1]) + " has been flagged for more than 24 hours")
-    timeflagged = (flagged[filename]['time'])
-    logging.info("Flagged at " + timeflagged)
-    elapsed = datetime.datetime.now() - parser.parse(timeflagged)
-    if elapsed > datetime.timedelta(hours=23):
-        removing.append(filename)
-        logging.debug("... It Has")
-    else:
-        logging.debug("... It Hasn't")
-
-for filename in removing:
-    removed +=1
-    logging.info("Deleting" + (filename.rsplit("/")[-1]))
-    os.remove(filename)
-    flagged.pop(filename)
-    show = guessit(filename)
-    title = show.get('title')
-    seasonNumber = show.get('season')
-    episodeNumber = show.get('episode')
-
-
-
-    series = requests.get(sonarr_url.format('series'))
-    series = series.json()
-    for x in series:
-        if x["title"] == title:
+        logging.info("Deleting expired stream" + (filename.rsplit("/")[-1]))
+        os.remove(filename)
+        show = guessit(filename)
+        title = show.get('title')
+        seasonNumber = show.get('season')
+        episodeNumber = show.get('episode')   
+        series = requests.get(sonarr_url.format('series'))
+        series = series.json()
+        for x in series:
+         if x["title"] == title:
             seriesId = x["id"]
             break
-    data = {'name':'rescanSeries','seriesId': seriesId}
-    requests.post(sonarr_url.format('command'),json=data)
-    episodes = requests.get(sonarr_url.format('episode'), params={'SeriesiD':seriesId})
-    episodes = episodes.json()
-    for data in episodes:
-        if data['seasonNumber'] == seasonNumber and data['episodeNumber'] == episodeNumber:
+        data = {'name':'rescanSeries','seriesId': seriesId}
+        requests.post(sonarr_url.format('command'),json=data)
+        episodes = requests.get(sonarr_url.format('episode'), params={'SeriesiD':seriesId})
+        episodes = episodes.json()
+        for data in episodes:
+         if data['seasonNumber'] == seasonNumber and data['episodeNumber'] == episodeNumber:
             data['monitored']=True
             data = str(json.dumps(data))
             break
 
-    requests.put(sonarr_url.format('episode'), data=data, headers = {"Content-Type": "application/json"})
-    requests.get(sonarr_url.format('wanted/missing'), data=data, headers = {"Content-Type": "application/json"})
+      requests.put(sonarr_url.format('episode'), data=data, headers = {"Content-Type": "application/json"})
+      requests.get(sonarr_url.format('wanted/missing'), data=data, headers = {"Content-Type": "application/json"})  
 
-
-f = open("flagged.pkl","wb")
-pickle.dump(flagged,f)
-f.close()
+    except KeyError:
+     logging.info("Keeping active stream " + filename.rsplit("/")[-1])
  
-if removed:   
-    logging.info("Removed " + str(removed) + " dead link(s); Sonarr will be alerted and replacements downloaded")
-else:
-    logging.info("No persistently dead links found")
-    open("test","wb")
+
+
+
+    
+
+
     
 for folder in os.listdir(completed_path):
  elapsed = datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(os.path.getmtime(completed_path+"/"+folder))  
