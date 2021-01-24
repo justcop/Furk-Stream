@@ -58,7 +58,7 @@ for filename in Path(media_path).rglob('*.strm'):
         r = urllib.request.urlopen(url)
     except urllib.error.URLError as e:
         r = e
-    logging.info(r.content)
+    logging.info(str(r.read))
 
     if "file not found" in r.read:
         filename = str(filename)
