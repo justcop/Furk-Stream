@@ -13,6 +13,7 @@ import time
 from pathlib import Path
 from dateutil import parser
 from guessit import guessit
+from bs4 import BeautifulSoup
 from logging.handlers import TimedRotatingFileHandler
 
 from configs import media_path
@@ -55,7 +56,7 @@ for filename in Path(media_path).rglob('*.strm'):
     f.close()
     logging.info(str(url))
     try:
-        r = requests.get(url)
+        r = urllib.requests.urlopen(url)
         r = str(r.text())
     except urllib.error.URLError as e:
         r = e
