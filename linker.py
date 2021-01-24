@@ -52,12 +52,12 @@ for filename in Path(media_path).rglob('*.strm'):
   with open(filename, 'r') as f:
     url = f.read()
     f.close()
-    print(url)
+    logging.info(url)
     try:
         r = urllib.request.urlopen(url)
     except urllib.error.URLError as e:
         r = e
-    print(r.content)
+    logging.info(r.content)
 
     if "file not found" in r.content:
         filename = str(filename)
