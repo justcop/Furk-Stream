@@ -53,12 +53,9 @@ for filename in Path(media_path).rglob('*.strm'):
  with open(filename, 'r') as f:
     url = f.read()
     f.close()
-    logging.info(str(filename))
     r = requests.head(url)
-    logging.info(str(r))
-    #encoding = r.info().get_content_charset('utf8')
-    
-    if r.headers['warning'] == 'file_not_found':
+    try:
+      if r.headers['warning'] == 'file_not_found':
         filename = str(filename)
         time = str(datetime.datetime.now())
         try:
@@ -67,9 +64,11 @@ for filename in Path(media_path).rglob('*.strm'):
          flagged[filename] = {}
          flagged[filename]['time'] = oldtime
         except:
-         logging.info("Flagging " + (filename.rsplit("/")[-1]) + " for removal as stream URL not currently valid. Will check again in 24 hours and remove if still not available")
+         logging.info("Flagging " + (filename.rsplit("/")[-1]) + " deleted as no longer valid")
          flagged[filename] = {}
          flagged[filename]['time'] = time
+    except KeyError:
+     logging.info(str(filename) + "is valid")
 
 for filename in flagged:
     logging.debug("Checking if current file " + (filename.rsplit("/")[-1]) + " has been flagged for more than 24 hours")
