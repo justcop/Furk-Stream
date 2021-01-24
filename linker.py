@@ -56,7 +56,8 @@ for filename in Path(media_path).rglob('*.strm'):
         show = guessit(filename)
         title = show.get('title')
         seasonNumber = show.get('season')
-        episodeNumber = show.get('episode')   
+        episodeNumber = show.get('episode')
+        logging.info(str(title))
         series = requests.get(sonarr_url.format('series'))
         series = series.json()
         for x in series:
