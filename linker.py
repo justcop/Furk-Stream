@@ -60,7 +60,9 @@ for filename in Path(media_path).rglob('*.strm'):
         r = e
     logging.info(str(r.info().get_content_charset('utf8')))
     r = r.read()
-    if "file not found" in r.info().get_content_charset('utf8'):
+    encoding = r.info().get_content_charset('utf8')
+    r = r.decode(encoding)
+    if "file not found" in r:
         filename = str(filename)
         time = str(datetime.datetime.now())
         try:
