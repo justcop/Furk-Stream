@@ -48,7 +48,7 @@ except:
  pass
 
 logging.info("Checking integrity of any strm files currently in library")
-for filename in in os.listdir(media_path):
+for filename in os.listdir(media_path):
  logging.info("." + filename)
  with open(filename, 'r') as f:
     url = f.read()
