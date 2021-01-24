@@ -61,6 +61,8 @@ if r.code in (200, 401):
         r = urllib.request.urlopen(url)
     except urllib.error.URLError as e:
         r = e
+    print(r.content)
+
     if "file not found" in r.content:
         filename = str(filename)
         time = str(datetime.datetime.now())
