@@ -58,7 +58,7 @@ for filename in Path(media_path).rglob('*.strm'):
         r = urllib.request.urlopen(url)
     except urllib.error.URLError as e:
         r = e
-    logging.info(str(r.info().get_content_charset('utf8')))
+    #logging.info(str(r.info().)
     r = r.read()
     encoding = r.info().get_content_charset('utf8')
     r = r.decode(encoding)
