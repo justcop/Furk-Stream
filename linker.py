@@ -74,19 +74,13 @@ for filename in Path(media_path).rglob('*.strm'):
             data = str(json.dumps(data))
             break
 
-      requests.put(sonarr_url.format('episode'), data=data, headers = {"Content-Type": "application/json"})
-      requests.get(sonarr_url.format('wanted/missing'), data=data, headers = {"Content-Type": "application/json"})  
+        requests.put(sonarr_url.format('episode'), data=data, headers = {"Content-Type": "application/json"})
+        requests.get(sonarr_url.format('wanted/missing'), data=data, headers = {"Content-Type": "application/json"})  
 
     except KeyError:
      logging.info("Keeping active stream " + f.rsplit("/")[-1])
  
-
-
-
-    
-
-
-    
+ 
 for folder in os.listdir(completed_path):
  elapsed = datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(os.path.getmtime(completed_path+"/"+folder))  
  if elapsed > datetime.timedelta(hours=3):
