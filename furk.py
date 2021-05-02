@@ -57,6 +57,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
             data = (requests.get(base_url.format(magnet,furk_api))).json()
         except:
             logging.error("Unable to get valid furk response for this torrent.")
+            logging.error(str(data))
             continue
 
         try:
