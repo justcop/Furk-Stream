@@ -26,7 +26,7 @@ A second script, 'linker.py' will check that all the strm still contain valid UR
 10. Checking www.furk.net can be resolved (to avoid internet or website being down)
 11. Checks each strm file in turn and ensures URL is active
 12. Any newly inactive links are flagged for removal with a specific time stamp
-13. If the link is already flagged and has been for 23 hours or more, the strm link is deleted and Sonarr is notified to monitor for the episode again and search for all monitored episodes
+13. If the link is already flagged and has been for 23 hours or more, the strm link is deleted [and Sonarr is notified to monitor for the episode again and search for all monitored episodes - **nb the bracketed off part of this feature isn't quite functional yet]
 
 <b>Setup:</b>
 
