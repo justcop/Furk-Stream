@@ -23,23 +23,19 @@ from configs import sonarr_address
 from configs import radarr_key
 from configs import radarr_address
 
-logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),logging.FileHandler("/config/furk.log"),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk) %(message)s',
+#logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),logging.FileHandler("/config/furk.log"),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk) %(message)s',
+logging.basicConfig(handlers=[logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk) %(message)s',
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
-
-
 
 sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
 radarr_url = radarr_address + '/api/{}?apikey=' + radarr_key
 
 timeout = 0
-
-
-
-processed = 0
+processed = 0 
 retry = 0
 
-for filename in glob.glob(os.path.join(torrents_path, '*.torrent')):
+for filename in glob.glob(os.path.join(torrents_path, '*.torrent')): #converts torrents to magnet links
       torrent = Torrent.from_file(filename)
       with open(filename + ".magnet", 'w') as f:
        f.write(torrent.magnet_link)
@@ -47,21 +43,21 @@ for filename in glob.glob(os.path.join(torrents_path, '*.torrent')):
         
 
 
-for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
+for filename in glob.glob(os.path.join(torrents_path, '*.magnet')): #opens each magnet link
       with open(filename, 'r') as f:
         magnet = f.read()
         logging.info("Uploading \""+((filename.rsplit("/")[-1]).rsplit(".",1)[0])+"\" to Furk")
         
         try:
-            base_url = 'https://www.furk.net/api/dl/add?url={}&api_key={}'
+            base_url = 'https://www.furk.net/api/dl/add?url={}&api_key={}' #tries to add magnet link to furk
             data = (requests.get(base_url.format(magnet,furk_api))).json()
         except:
-            logging.error("Unable to get valid furk response for this torrent.")
+            logging.error("Unable to get valid furk response for this torrent.") #logs if no response from furk
             logging.error(str(data))
             continue
 
         try:
-         files = data["files"][0]
+         files = data["files"][0] #checks api response, command will succeed if download has completed
          logging.info("Checking "+data["files"][0]["name"]+" in Furk")
         except:
             try:
@@ -76,19 +72,19 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                 retry += 1
         else:
           try:
-            xspfurl = urllib.request.urlopen(files["url_pls"])
+            xspfurl = urllib.request.urlopen(files["url_pls"]) #checks api response for a playlist file, command will succeed if download has completed
           except:
             logging.warning("furk file is not yet ready for download")
             retry += 1
-          else:
+          else: #if ready for download than runs the playlist file through beautiful soup to parse the HTML and get the details about the file
             xspf = xspfurl.read()
             soup = BeautifulSoup(xspf, "html5lib")
             title = soup('title')
             strmurl = soup('location')
 
             try:
-                for x in range(len(strmurl)):
-                    try:
+                for x in range(len(strmurl)): #runs through all the URLs in the playlist in case there are many len(strmurl) should give the size of the list of urls
+                    try: #gets further details about the file using guessit library
                         metadata = guessit(str(title[x+1].text))
                         if metadata.get('type') == 'episode':
                             path = completed_path + '/' + str(metadata.get('title')) + ' - ' + 'S' + str(metadata.get('season')) + "E" + str(metadata.get('episode')) + ' - [' + str(metadata.get('source')) + '-' + str(metadata.get('screen_size')) + ']'
@@ -103,7 +99,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                         except FileExistsError:
                             pass
                         strm = open(path+'/'+ episode +'.strm', 'w')
-                        strm.write(strmurl[x].string)
+                        strm.write(strmurl[x].string) #writes the strm file with the correct data
                         strm.close()
                         processed += 1
                     except Exception as e:
@@ -116,8 +112,8 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                 try:
                     logging.info("Completed processing "+data["files"][0]["name"])
                     os.remove(filename)
-                    os.system('chown -R 1001:1002 /share/downloads')
-                    if metadata.get('type') == 'episode':
+                    #os.system('chown -R 1001:1002 /share/downloads')
+                    if metadata.get('type') == 'episode': #updates radarr/sonarr to advise that episode is ready
                         data = {'name':'DownloadedEpisodesScan','path':path}
                         response = (requests.post(sonarr_url.format('command'),json=data)).json()
                     if metadata.get('type') == 'movie':
