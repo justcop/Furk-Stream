@@ -15,7 +15,8 @@ from dateutil import parser
 from guessit import guessit
 from logging.handlers import TimedRotatingFileHandler
 
-from configs import media_path
+from configs import Movies_path
+from configs import TV_path
 from configs import sonarr_key
 from configs import sonarr_address
 from configs import completed_path
@@ -44,7 +45,12 @@ for f in os.listdir(torrents_path):
         os.unlink(torrents_path+"/"+f)
 
 logging.info("Checking integrity of any strm files currently in library")
-for filename in Path(media_path).rglob('*.strm'):
+strmfiles = []
+for filename in Path(TV_path).rglob('*.strm')
+    strmfiles.append(filename)
+for filename in Path(Movies_path).rglob('*.strm')
+    strmfiles.append(filename)
+for filename in strmfiles:
  with open(filename, 'r') as f:
     url = f.read()
     f.close()
