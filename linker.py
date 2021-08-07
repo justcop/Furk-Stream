@@ -24,7 +24,7 @@ from configs import torrents_path
 
 
 #logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),TimedRotatingFileHandler("/config/furk.log", when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s',
-#logging.basicConfig(handlers=[TimedRotatingFileHandler(os.path.dirname(__file__)), when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s',
+logging.basicConfig(handlers=[TimedRotatingFileHandler(os.path.dirname(furk.log)), when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s',
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
 
@@ -46,9 +46,9 @@ for f in os.listdir(torrents_path):
 
 logging.info("Checking integrity of any strm files currently in library")
 strmfiles = []
-for filename in Path(TV_path).rglob('*.strm')
+for filename in Path(TV_path).rglob('*.strm'):
     strmfiles.append(filename)
-for filename in Path(Movies_path).rglob('*.strm')
+for filename in Path(Movies_path).rglob('*.strm'):
     strmfiles.append(filename)
 for filename in strmfiles:
  with open(filename, 'r') as f:
