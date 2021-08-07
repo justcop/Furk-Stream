@@ -24,7 +24,7 @@ from configs import radarr_key
 from configs import radarr_address
 
 #logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),logging.FileHandler("/config/furk.log"),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk) %(message)s',
-#logging.basicConfig(handlers=[TimedRotatingFileHandler(os.path.dirname(__file__)), when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk) %(message)s',
+logging.basicConfig(handlers=[TimedRotatingFileHandler(os.path.dirname(furk.log)), when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk) %(message)s',
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
 
