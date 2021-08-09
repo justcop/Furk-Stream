@@ -4,11 +4,9 @@ My first python script so please be kind.
 
 This script is written to allow the use of the online seedbox website www.furk.net as the main downloader and hoster of media files for use with a home media centre such as Kodi, Emby or Jellyfin etc.
 
-It is currently only fully functional for TV episodes but I intend to add movies in the future.
+The script is written with intention of using Sonarr, to monitor and download relevant .torrent file and .magnet files of monitored TV shows. The script, will then work with the 'torrent black hole' feature in Sonarr and Radarr, request the files to be downloaded in furk and when ready will find the URL at which they are hosted and put this in a .strm file in your TV folder. Strm files can be read by Kodi, Emby or Jellyfin (but not Plex!) and mean that downloaded files do not need to sit on any local storage media.
 
-The script is written with intention of using Sonarr, to monitor and download relevant .torrent file and .magnet files of monitored TV shows. The script, will then work with the 'torrent black hole' feature in Sonarr, request the files to be downloaded in furk and when ready will find the URL at which they are hosted and put this in a .strm file in your TV folder. Strm files can be read by Kodi, Emby or Jellyfin (but not Plex!) and mean that downloaded files do not need to sit on any local storage media.
-
-A second script, 'linker.py' will check that all the strm still contain valid URLs. If the URL is cannot be found on furk for over 24 hours, then it will delete the strm file and signal to sonarr to redownload the episode.
+A second script, 'linker.py' will check that all the strm still contain valid URLs. If the URL is cannot be found on furk for over 24 hours, then it will delete the strm file and signal to sonarr or radarr to redownload the episode.
 
 
 <b>How it works:</b>
@@ -30,7 +28,7 @@ A second script, 'linker.py' will check that all the strm still contain valid UR
 
 <b>Setup:</b>
 
-1. Setup should be relatively straight forward. rename the 'configs.py - template' to 'configs.py' and fill in to include your furk and sonarr api keys, together with you torrents folder , set as your torrent black hole in sonarr, your completed downloads folder that sonarr monitors for files and your TV folder, where sonarr keeps and organises downloaded files.
+1. Setup should be relatively straight forward. rename the 'configs.py - template' to 'configs.py' and fill in to include your furk and sonarr api keys, together with you torrents folder , set as your torrent black hole in sonarr and radarr, your completed downloads folder that sonarr monitors for files and your TV folder, where sonarr keeps and organises downloaded files.
 
 2. You should then setup a cronjob to run furk.py say every 6 hours and linker.py to run say every 24 hours, probably in the middle of the night, as per your preferences.
 
@@ -59,8 +57,3 @@ Within sonarr, make sure to keep, 'monitor deleted episodes' unchecked and feel 
 <b>Caution:</b>
 
 Furk.net has safeguards to avoid you downloading too much within the cloud, without viewing it. Be careful to avoid reaching these thresholds by keeping lots of media in your cloud library, especially if you let it reload every few months as links begin to fail.
-
-
-EDIT
-
-This is now setup to work with movies using radarr too. 
