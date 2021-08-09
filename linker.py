@@ -62,7 +62,7 @@ for filename in strmfiles:
       response = requests.get("https://www.furk.net/")
       fileerror = true
      except: # if not then exit
-      logging.info("furk.net is not accessible - Exiting....)
+      logging.info("furk.net is not accessible - Exiting....")
       quit()
     f = str(filename) 
     try: #checks if furk gives a file not found error
