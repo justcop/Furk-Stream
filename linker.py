@@ -23,9 +23,9 @@ from configs import completed_path
 from configs import torrents_path
 
 try:
- logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),TimedRotatingFileHandler(os.path.dirname("furk.log"), when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
+ logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),TimedRotatingFileHandler(os.path.dirname(__file__) + "furk.log", when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
 except:
- logging.basicConfig(handlers=[TimedRotatingFileHandler(os.path.dirname("furk.log"), when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
+ logging.basicConfig(handlers=[TimedRotatingFileHandler(os.path.dirname(__file__) + "furk.log", when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
 
 
 flagged = {}
@@ -54,10 +54,19 @@ for filename in strmfiles:
  with open(filename, 'r') as f:
     url = f.read()
     f.close()
-    r = requests.head(url)
-    f = str(filename) 
     try:
-      if r.headers['warning'] == 'file_not_found':
+     r = requests.head(url)
+    except: # file cannot be accessed and furk is not giving an error to say that the file is not found
+     fileerror = false
+     try: #check that the furk website is still working
+      response = requests.get("https://www.furk.net/")
+      fileerror = true
+     except: # if not then exit
+      logging.info("furk.net is not accessible - Exiting....)
+      quit()
+    f = str(filename) 
+    try: #checks if furk gives a file not found error
+      if r.headers['warning'] == 'file_not_found' or fileerror == true:
         logging.info("Deleting expired stream" + f.rsplit("/")[-1]) 
         os.remove(filename)
         show = guessit(filename)
