@@ -22,9 +22,9 @@ from configs import sonarr_address
 from configs import completed_path
 from configs import torrents_path
 
-Try:
+try:
  logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),TimedRotatingFileHandler(os.path.dirname("furk.log"), when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
-Except:
+except:
  logging.basicConfig(handlers=[TimedRotatingFileHandler(os.path.dirname("furk.log"), when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
 
 
