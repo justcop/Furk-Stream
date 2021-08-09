@@ -13,6 +13,7 @@ import html5lib
 from guessit import guessit
 from bs4 import BeautifulSoup
 from torrentool.api import Torrent
+from logging.handlers import TimedRotatingFileHandler
 
 from configs import furk_api
 from configs import torrents_path
