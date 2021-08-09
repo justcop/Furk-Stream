@@ -59,16 +59,15 @@ for filename in strmfiles:
      r = requests.head(url)
     except: # file cannot be accessed and furk is not giving an error to say that the file is not found
      try: #check that the furk website is still working
-      response = requests.get("https://www.furk.net/")
-      fileerror = True
+      requests.get("https://www.furk.net/")
+      r.headers['warning'] == 'file_not_found'
      except: # if not then exit
       logging.info("furk.net is not accessible - Exiting....")
       quit()
     f = str(filename) 
     try: #checks if furk gives a file not found error
-      if fileerror == True:
-        r.headers['warning'] == 'file_not_found'
       if r.headers['warning'] == 'file_not_found':
+        logging.info(r.headers['warning'])
         logging.info("Deleting expired stream" + f.rsplit("/")[-1]) 
         os.remove(filename)
         show = guessit(filename)
