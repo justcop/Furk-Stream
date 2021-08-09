@@ -70,7 +70,6 @@ for filename in strmfiles:
     f = str(filename) 
     try: #checks if furk gives a file not found error
       if r.headers['warning'] == 'file_not_found':
-        logging.info(r.headers['warning'])
         logging.info("Deleting expired stream" + f.rsplit("/")[-1]) 
         os.remove(filename)
         show = guessit(filename)
