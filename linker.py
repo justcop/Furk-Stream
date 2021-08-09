@@ -52,12 +52,12 @@ for filename in Path(Movies_path).rglob('*.strm'):
     strmfiles.append(filename)
 for filename in strmfiles:
  with open(filename, 'r') as f:
+    fileerror = False
     url = f.read()
     f.close()
     try:
      r = requests.head(url)
     except: # file cannot be accessed and furk is not giving an error to say that the file is not found
-     fileerror = False
      try: #check that the furk website is still working
       response = requests.get("https://www.furk.net/")
       fileerror = True
