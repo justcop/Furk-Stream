@@ -7,6 +7,7 @@ import logging
 import urllib
 import time
 import html5lib
+import sys
 
 from guessit import guessit
 from bs4 import BeautifulSoup
