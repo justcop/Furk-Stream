@@ -35,7 +35,7 @@ processed = 0
 retry = 0
 
 try:
-            base_url = 'https://www.furk.net/api/file/get?api_key={}' gets list of files
+            base_url = 'https://www.furk.net/api/file/get?api_key={}' #gets list of files
             data = (requests.get(base_url.format(furk_api))).json()
         except:
             logging.error("Unable to get valid furk response for this torrent.") #logs if no response from furk
