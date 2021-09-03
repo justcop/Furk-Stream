@@ -35,7 +35,7 @@ processed = 0
 retry = 0
 
 try:
-            base_url = 'https://www.furk.net/api/file/get?api_key={}' #tries to add magnet link to furk
+            base_url = 'https://www.furk.net/api/file/get?api_key={}' gets list of files
             data = (requests.get(base_url.format(furk_api))).json()
         except:
             logging.error("Unable to get valid furk response for this torrent.") #logs if no response from furk
@@ -43,10 +43,10 @@ try:
             continue
 
 for file in data[files]            
-  if file[url_dl]      
+  if str(file["url_dl"]) = str(sys.argv[1])
   
-try:
-            xspfurl = urllib.request.urlopen(files["url_pls"]) #checks api response for a playlist file, command will succeed if download has completed
+  try:
+            xspfurl = urllib.request.urlopen(file["url_pls"]) #checks api response for a playlist file, command will succeed if download has completed
           except:
             logging.warning("furk file is not yet ready for download")
             retry += 1
