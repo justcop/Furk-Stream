@@ -42,7 +42,7 @@ except:
             logging.error(str(data))
             continue
 
-for file in data[files]            
+for file in data["files"]:        
   if str(file["url_dl"]) = str(sys.argv[1])
   
   try:
