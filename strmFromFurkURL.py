@@ -40,7 +40,6 @@ try:
 except:
             logging.error("Unable to get valid furk response for this torrent.") #logs if no response from furk
             logging.error(str(data))
-            continue
 
 for file in data["files"]:        
   if str(file["url_dl"]) == str(sys.argv[1]):
