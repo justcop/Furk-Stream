@@ -85,7 +85,7 @@ for file in data["files"]:
             else:
                 try:
                     logging.info("Completed processing "+data["files"][0]["name"])
-                    os.remove(filename)
+  
                     #os.system('chown -R 1001:1002 /share/downloads')
                     if metadata.get('type') == 'episode': #updates radarr/sonarr to advise that episode is ready
                         data = {'name':'DownloadedEpisodesScan','path':path}
