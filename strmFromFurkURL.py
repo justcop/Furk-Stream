@@ -43,7 +43,7 @@ except:
             continue
 
 for file in data["files"]:        
-  if str(file["url_dl"]) = str(sys.argv[1])
+  if str(file["url_dl"]) == str(sys.argv[1])
   
   try:
             xspfurl = urllib.request.urlopen(file["url_pls"]) #checks api response for a playlist file, command will succeed if download has completed
