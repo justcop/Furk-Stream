@@ -37,6 +37,7 @@ A second script, 'linker.py' will check that all the strm still contain valid UR
 Within sonarr, make sure to keep, 'monitor deleted episodes' unchecked and feel free to use indexers which can only download magnet links and full season torrents.
 
 <b>Furk URL to .strm</b>
+
 If you don't have a torrent/magnet but do have the URL of a file already on furk.net, you can use strmFromFurkURL.py. Simply run the script with the url as the first parameter. eg python3 strmFromFurkURL.py http://furk.net/<SOME FURK URL>
 
 <b>Caution:</b>
