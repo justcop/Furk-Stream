@@ -32,27 +32,12 @@ A second script, 'linker.py' will check that all the strm still contain valid UR
 
 2. You should then setup a cronjob to run furk.py say every 6 hours and linker.py to run say every 24 hours, probably in the middle of the night, as per your preferences.
 
-3. The script has the following dependencies which should be download with pip if needed
-
-urllib.request, urllib.error, urllib.parse
-os
-pickle
-datetime
-requests
-logging
-os
-glob
-requests
-json
-ast
-logging
-urllib
-time
-guessit
-bs4
-torrentool.api
+3. Use pip to install requirements.txt
 
 Within sonarr, make sure to keep, 'monitor deleted episodes' unchecked and feel free to use indexers which can only download magnet links and full season torrents.
+
+<b>Furk URL to .strm</b>
+If you don't have a torrent/magnet but do have the URL of a file already on furk.net, you can use strmFromFurkURL.py. Simply run the script with the url as the first parameter. eg python3 strmFromFurkURL.py http://furk.net/<SOME FURK URL>
 
 <b>Caution:</b>
 
