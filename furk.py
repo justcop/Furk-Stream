@@ -23,7 +23,9 @@ from configs import sonarr_key
 from configs import sonarr_address
 from configs import radarr_key
 from configs import radarr_address
-
+try:
+ from configs import permissions_change
+ 
 try:
  logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),TimedRotatingFileHandler("furk.log", when="midnight", interval=1, backupCount=7),logging.StreamHandler()],format='%(asctime)s %(levelname)s (Furk Link-Check) %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
 except:
@@ -113,7 +115,8 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')): #opens each 
                 try:
                     logging.info("Completed processing "+data["files"][0]["name"])
                     os.remove(filename)
-                    #os.system('chown -R 1001:1002 /share/downloads')
+                    if permissions_change:
+                     exec(permissions_change)                    
                     if metadata.get('type') == 'episode': #updates radarr/sonarr to advise that episode is ready
                         data = {'name':'DownloadedEpisodesScan','path':path}
                         response = (requests.post(sonarr_url.format('command'),json=data)).json()
