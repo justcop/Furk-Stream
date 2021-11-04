@@ -1,2 +1,6 @@
-
+env
 configs.py
+furk.sh
+linker.sh
+strmFromFurkURL.sh
+*.log
