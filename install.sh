@@ -9,4 +9,7 @@ set –o noclobber
 echo "./env/bin/python3" furk.py > furk.sh
 echo "./env/bin/python3" linker.py > linker.sh
 echo "./env/bin/python3" strmFromFurkURL.py > strmFromFurkURL.sh
+chmod +x furk.sh
+chmod +x linker.sh
+chmod +x strmFromFurkURL.sh
 set +o noclobber
