@@ -3,4 +3,5 @@ configs.py
 furk.sh
 linker.sh
 strmFromFurkURL.sh
-*.log
+*.log.*
+__pycache__
