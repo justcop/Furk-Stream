@@ -1,5 +1,6 @@
 #! /bin/bash
 
+set –o noclobber
 echo "installing python virtual environment"
 python3 -m venv env
 source env/bin/activate
@@ -7,7 +8,6 @@ source env/bin/activate
 echo "installing python packages in virtual environment"
 pip install -r requirements.txt
 deactivate
-set –o noclobber
 
 echo "Creating scripts to launch in virtual environment"
 
