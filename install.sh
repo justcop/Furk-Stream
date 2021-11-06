@@ -13,23 +13,23 @@ echo "Creating scripts to launch in virtual environment"
 
 cat<<END > furk.sh
 #!/bin/bash                                                                                 
-parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )                                
-cd "$parent_path"                                                                              
+parent_path=$( cd "\$(dirname "\${BASH_SOURCE[0]}")" ; pwd -P )                                
+cd "\$parent_path"                                                                              
 ./env/bin/python3 furk.py
 END
 
 cat<<END > linker.sh
 #!/bin/bash                                                                                 
-parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )                                
-cd "$parent_path"                                                                              
+parent_path=$( cd "\$(dirname "\${BASH_SOURCE[0]}")" ; pwd -P )                                
+cd "\$parent_path"                                                                              
 ./env/bin/python3 linker.py
 END
 
 
 cat<<END > strmFromFurkURL.sh
 #!/bin/bash                                                                                 
-parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )                                
-cd "$parent_path"                                                                              
+parent_path=$( cd "\$(dirname "\${BASH_SOURCE[0]}")" ; pwd -P )                                
+cd "\$parent_path"                                                                              
 ./env/bin/python3 strmFromFurkURL.py
 END
 
