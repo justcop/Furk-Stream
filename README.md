@@ -30,9 +30,9 @@ A second script, 'linker.py' will check that all the strm still contain valid UR
 
 1. Setup should be relatively straight forward. rename the 'configs.py - template' to 'configs.py' and fill in to include your furk and sonarr api keys, together with you torrents folder , set as your torrent black hole in sonarr and radarr, your completed downloads folder that sonarr monitors for files and your TV folder, where sonarr keeps and organises downloaded files.
 
-2. You should then setup a cronjob to run furk.py say every 6 hours and linker.py to run say every 24 hours, probably in the middle of the night, as per your preferences.
+2. If running in linux, run install.sh to setup a virtual environment and all requirements. On other platforms use pip to install requirements.txt
 
-3. Use pip to install requirements.txt
+3. You should then setup a cronjob to run furk.sh say every 6 hours and linker.sh to run say every 24 hours, probably in the middle of the night, as per your preferences. (On non linux platforms replace .sh with .py)
 
 Within sonarr, make sure to keep, 'monitor deleted episodes' unchecked and feel free to use indexers which can only download magnet links and full season torrents.
 
