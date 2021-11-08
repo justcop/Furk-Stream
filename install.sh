@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
  
 echo "installing python virtual environment"
 #python3 -m venv env
