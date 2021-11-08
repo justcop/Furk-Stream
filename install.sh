@@ -15,7 +15,7 @@ do
 parent_path=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 echo "#! /bin/sh
 $parent_path/env/bin/python3 furk.py
-" > ${f::-2}.sh
+" > ${f::-2}sh
 done
 
 chmod +x *.sh
