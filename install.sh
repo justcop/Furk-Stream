@@ -12,8 +12,9 @@ echo "Creating scripts to launch in virtual environment"
 
 for f in *.py
 do
+parent_path=$( cd ""\$(dirname ""\${BASH_SOURCE[0]}"")" ; pwd -P )
 echo "#! /bin/sh
-$( cd ""\$(dirname ""\${BASH_SOURCE[0]}"")" ; pwd -P )/env/bin/python3 furk.py
+$parent_path/env/bin/python3 furk.py
 " > ${f::-2}.sh
 done
 
