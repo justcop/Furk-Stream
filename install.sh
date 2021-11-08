@@ -1,5 +1,5 @@
 #! /bin/bash
-
+ 
 set –o noclobber
 echo "installing python virtual environment"
 python3 -m venv env
