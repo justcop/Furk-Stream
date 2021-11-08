@@ -1,6 +1,5 @@
-#! /bin/bash
+#! /bin/sh
  
-set –o noclobber
 echo "installing python virtual environment"
 python3 -m venv env
 source env/bin/activate
@@ -11,29 +10,12 @@ deactivate
 
 echo "Creating scripts to launch in virtual environment"
 
-cat<<END > furk.sh
-#!/bin/bash                                                                                 
-parent_path=$( cd "\$(dirname "\${BASH_SOURCE[0]}")" ; pwd -P )                                
-cd "\$parent_path"                                                                              
-./env/bin/python3 furk.py
-END
+for f in *.py
+do
+echo "#! /bin/sh
+$( cd ""\$(dirname ""\${BASH_SOURCE[0]}"")" ; pwd -P )/env/bin/python3 furk.py
+" > ${f::-2}.sh
+done
 
-cat<<END > linker.sh
-#!/bin/bash                                                                                 
-parent_path=$( cd "\$(dirname "\${BASH_SOURCE[0]}")" ; pwd -P )                                
-cd "\$parent_path"                                                                              
-./env/bin/python3 linker.py
-END
+chmod +x *.sh
 
-
-cat<<END > strmFromFurkURL.sh
-#!/bin/bash                                                                                 
-parent_path=$( cd "\$(dirname "\${BASH_SOURCE[0]}")" ; pwd -P )                                
-cd "\$parent_path"                                                                              
-./env/bin/python3 strmFromFurkURL.py
-END
-
-chmod +x furk.sh
-chmod +x linker.sh
-chmod +x strmFromFurkURL.sh
-set +o noclobber
