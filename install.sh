@@ -18,7 +18,7 @@ continue
 fi
 parent_path=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 echo "#! /bin/sh
-$parent_path/env/bin/python3 \$1 furk.py
+$parent_path/env/bin/python3 $f \$1
 " > ${f::-2}sh
 done
 
