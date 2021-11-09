@@ -2,7 +2,7 @@
 
 parent_path=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ) 
 echo "installing python virtual environment"
-
+cd parent_path
 python3 -m venv env
 source env/bin/activate
 
