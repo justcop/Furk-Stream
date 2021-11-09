@@ -19,7 +19,7 @@ fi
 parent_path=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 echo "#! /bin/sh
 source env/bin/activate
-$f \$1
+$f \$1 \$2 \£3
 " > ${f::-2}sh
 done
 
