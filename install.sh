@@ -7,8 +7,7 @@ python3 -m venv env
 source env/bin/activate
 
 echo "installing python packages in virtual environment"
-pip install -r 
-$parent_path/requirements.txt
+pip install -r $parent_path/requirements.txt
 deactivate
 
 echo "Creating scripts to launch in virtual environment"
