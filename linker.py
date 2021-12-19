@@ -63,13 +63,13 @@ for filename in strmfiles:
      except: # if not then exit
       logging.info("furk.net is not accessible - Exiting....")
       quit()
-     finally:
-      r.headers = {
-      "warning": "file_not_found"
-      }
+     #finally:
+      #r.headers = {
+      #"warning": "file_not_found"
+      #}
     f = str(filename) 
     try: #checks if furk gives a file not found error
-      if r.headers['warning'] == 'file_not_found':
+      if r.headers['warning'] == 'file_not_found' or r.status_code == '404':
         logging.info("Deleting expired stream " + f.rsplit("/")[-1]) 
         os.remove(filename)
         show = guessit(filename)
@@ -94,7 +94,9 @@ for filename in strmfiles:
 
         requests.put(sonarr_url.format('episode'), data=data, headers = {"Content-Type": "application/json"})
         requests.get(sonarr_url.format('wanted/missing'), data=data, headers = {"Content-Type": "application/json"})  
-
+      #if r.status_code == '404':
+        #logging.info("Deleting expired stream " + f.rsplit("/")[-1]) 
+        #os.remove(filename)
     except KeyError:
      logging.info("Keeping active stream " + f.rsplit("/")[-1])
  
