@@ -94,6 +94,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')): #opens each 
                         if metadata.get('type') == 'movie':
                             path = completed_path + '/' + ((filename.rsplit("/")[-1]).rsplit(".",1)[0])
                             episode = str(metadata.get('title'))
+                        path = completed_path + '/' + ((filename.rsplit("/")[-1]).rsplit(".",1)[0])
                         try:
                             os.mkdir(path)
                         except FileExistsError:
