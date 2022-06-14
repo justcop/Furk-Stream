@@ -18,6 +18,7 @@ from logging.handlers import TimedRotatingFileHandler
 from configs import furk_api
 from configs import torrents_path
 from configs import completed_path
+from configs import sonarr_key
 from configs import sonarr_address
 from configs import radarr_key
 from configs import radarr_address
