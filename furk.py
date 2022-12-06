@@ -113,9 +113,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')): #opens each 
             else:
                 try:
                     logging.info("Completed processing "+data["files"][0]["name"])
-                    os.remove(filename)
-                    if permissions_change:
-                     exec(permissions_change)                    
+                    os.remove(filename)                  
                     if metadata.get('type') == 'episode': #updates radarr/sonarr to advise that episode is ready
                         data = {'name':'DownloadedEpisodesScan','path':path}
                         response = (requests.post(sonarr_url.format('command'),json=data)).json()
