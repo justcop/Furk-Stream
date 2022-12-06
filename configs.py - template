@@ -9,5 +9,3 @@ sonarr_address = ''
 
 radarr_key = ''
 radarr_address = ''
-
-permissions_change = '' #usually leave blank
