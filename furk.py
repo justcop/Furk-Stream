@@ -86,19 +86,19 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                 logging.error("Furk returned unexpected response, without file date")
                 logging.error(str(data))
                 continue
-        else:
+            else:
             # Log if file is not yet ready for download and increment retry counter
-            logging.warning("Furk file \"" + ((filename.rsplit("/")[-1]).rsplit(".", 1)[0]) + "\" is not yet ready for download")
-            retry += 1
-    else:
-        # Try to get playlist file from Furk API response
-        try:
+              logging.warning("Furk file \"" + ((filename.rsplit("/")[-1]).rsplit(".", 1)[0]) + "\" is not yet ready for download")
+              retry += 1
+        else:
+          # Try to get playlist file from Furk API response
+          try:
             xspfurl = urllib.request.urlopen(files["url_pls"])
-        except:
+          except:
             # Log if playlist file is not yet available and increment retry counter
             logging.warning("Furk file is not yet ready for download")
             retry += 1
-        else:
+          else:
             # Parse playlist file using BeautifulSoup and extract details using guessit
             xspf = xspfurl.read()
             soup = BeautifulSoup(xspf, "html5lib")
