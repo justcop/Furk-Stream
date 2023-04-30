@@ -99,7 +99,11 @@ for filename in strmfiles:
         #os.remove(filename)
     except KeyError:
      logging.info("Keeping active stream " + f.rsplit("/")[-1])
- 
+
+data = {'name':'missingEpisodeSearch'}
+requests.post(sonarr_url.format('command'), json=data, headers = {"Content-Type": "application/json"})
+data = {'name':'missingMoviesSearch'}
+requests.post(radarr_url.format('command'), json=data, headers = {"Content-Type": "application/json"})
  
 for folder in os.listdir(completed_path):
  elapsed = datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(os.path.getmtime(completed_path+"/"+folder))  
