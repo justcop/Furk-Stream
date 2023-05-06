@@ -7,6 +7,8 @@ python3 -m venv env
 source env/bin/activate
 
 echo "installing python packages in virtual environment"
+pip install pigar
+pigar generate
 pip install -r $parent_path/requirements.txt
 deactivate
 
