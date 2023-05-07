@@ -50,10 +50,13 @@ else:
         datefmt=log_datefmt
     )
 
+logging.info("Starting Furk-Downloader script")
+
 retry = 0
 
 # Iterate through all .magnet files in the torrents_path directory
 for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
+    logging.info(f"Processing {filename}")
     with open(filename, 'r') as f:
         magnet = f.read().rstrip('\n')
     tor = Torrent.from_magnet(magnet)
@@ -68,10 +71,13 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
             logging.warning(f"Unable to find {filename}, removing from queue.")
             os.remove(filename)
         else:
+            logging.warning(f"Torrent not available on Furk for {filename}, retrying in 5 minutes")
             time.sleep(60 * 5)
             continue
     else:
         retry = 0
+
+    logging.info(f"Torrent found on Furk for {filename}")
 
     # Get download link and file information from Furk
     furk_id = data["id"]
@@ -90,7 +96,9 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
         else:
             continue
 
-        # Process each video file
+    logging.info(f"Filtered video files for {filename}")
+
+    # Process each video file
     for x in range(len(strmurl)):
         try:
             # Guess metadata of the video file
@@ -106,6 +114,8 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
             else:
                 continue
 
+            logging.info(f"Processing video file {episode}")
+
             # Create the destination directory if it doesn't exist
             if not os.path.exists(path):
                 os.makedirs(path)
@@ -114,6 +124,8 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
             strmfile = f'{path}/{episode}.strm'
             with open(strmfile, 'w') as f:
                 f.write(strmurl[x])
+
+            logging.info(f"Created .strm file for {episode}")
 
             # Check for subtitles and download them if available
             subtitle_url = ""
@@ -128,6 +140,7 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
                 subtitle_path = f'{path}/{subtitle_filename}'
                 with open(subtitle_path, 'wb') as f:
                     f.write(requests.get(subtitle_url).content)
+                logging.info(f"Downloaded subtitle for {episode}")
 
             # Update Sonarr for TV episodes
             if sonarr_key and metadata.get('type') == 'episode':
@@ -153,3 +166,6 @@ for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
 
     # Remove the .magnet file after processing
     os.remove(filename)
+    logging.info(f"Removed .magnet file for {filename}")
+
+logging.info("Furk-Downloader script completed")
