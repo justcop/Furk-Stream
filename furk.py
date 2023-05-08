@@ -72,54 +72,53 @@ def check_availability(api_key, file_id):
     else:
         raise Exception(f"Error getting download link: {response.status_code} - {file_obj.text}")
 
-def generate_strm_files(api_key, file_id, video_directory):
-    strm_files = []
+def generate_strm_files(api_key, file_id, video_directory): 
+    strm_files = [] 
 
-    for file_id in finished_torrents:
-        url = f"https://www.furk.net/api/file/get?api_key={api_key}&id={file_id}&t_files=1"
-        response = requests.get(url)
-        print(url)
-        print(response)
+    url = f"https://www.furk.net/api/file/get?api_key={api_key}&id={file_id}&t_files=1" 
+    response = requests.get(url) 
+    print(url) 
+    print(response) 
 
-        if response.status_code == 200:
-            json_response = response.json()
-            if json_response["status"] == "ok":
-                video_files = []
-                subtitle_files = []
+    if response.status_code == 200: 
+        json_response = response.json() 
+        if json_response["status"] == "ok": 
+            video_files = [] 
+            subtitle_files = [] 
 
-                # Find video and subtitle files in t_files data
-                for file in json_response["files"][0]["t_files"]:
-                    if "video" in file["ct"]:
-                        video_files.append(file)
-                    elif file["ct"] == "text/srt" and file["name"].endswith(".eng.srt"):
-                        subtitle_files.append(file)
+            # Find video and subtitle files in t_files data 
+            for file in json_response["files"][0]["t_files"]: 
+                if "video" in file["ct"]: 
+                    video_files.append(file) 
+                elif file["ct"] == "text/srt" and file["name"].endswith(".eng.srt"): 
+                    subtitle_files.append(file) 
 
-                # Create .strm files for each video file and download related subtitles
-                for video_file in video_files:
-                    strm_file_name = os.path.splitext(video_file["name"])[0] + ".strm"
-                    strm_file_path = os.path.join(video_directory, strm_file_name)
+            # Create .strm files for each video file and download related subtitles 
+            for video_file in video_files: 
+                strm_file_name = os.path.splitext(video_file["name"])[0] + ".strm" 
+                strm_file_path = os.path.join(video_directory, strm_file_name) 
 
-                    with open(strm_file_path, "w") as strm_file:
-                        strm_file.write(video_file["url_dl"])
+                with open(strm_file_path, "w") as strm_file: 
+                    strm_file.write(video_file["url_dl"]) 
 
-                    strm_files.append(strm_file_path)
+                strm_files.append(strm_file_path) 
 
-                    # Download and save related subtitle files
-                    for subtitle_file in subtitle_files:
-                        if os.path.splitext(video_file["name"])[0] == os.path.splitext(subtitle_file["name"])[0].rstrip(".eng"):
-                            subtitle_url = subtitle_file["url_dl"]
-                            subtitle_file_name = os.path.join(video_directory, subtitle_file["name"])
-                            with requests.get(subtitle_url, stream=True) as r:
-                                r.raise_for_status()
-                                with open(subtitle_file_name, "wb") as f:
-                                    for chunk in r.iter_content(chunk_size=8192):
-                                        f.write(chunk)
-            else:
-                raise Exception(f"Error getting file details: {json_response['error']}")
-        else:
-            raise Exception(f"Error getting file details: {response.status_code}")
+                # Download and save related subtitle files 
+                for subtitle_file in subtitle_files: 
+                    if os.path.splitext(video_file["name"])[0] == os.path.splitext(subtitle_file["name"])[0].rstrip(".eng"): 
+                        subtitle_url = subtitle_file["url_dl"] 
+                        subtitle_file_name = os.path.join(video_directory, subtitle_file["name"]) 
+                        with requests.get(subtitle_url, stream=True) as r: 
+                            r.raise_for_status() 
+                            with open(subtitle_file_name, "wb") as f: 
+                                for chunk in r.iter_content(chunk_size=8192): 
+                                    f.write(chunk) 
+        else: 
+            raise Exception(f"Error getting file details: {json_response['error']}") 
+    else: 
+        raise Exception(f"Error getting file details: {response.status_code}") 
 
-    return strm_files
+    return strm_files 
 
 def update_sonarr(sonarr_key, sonarr_address, strm_files):
     for strm_file in strm_files:
