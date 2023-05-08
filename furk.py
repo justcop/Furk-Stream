@@ -5,6 +5,7 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 import requests
 import glob
+from torrentool.api import Torrent
 from guessit import guessit
 from configs import furk_api, torrents_path, completed_path, sonarr_key, sonarr_address, radarr_key, radarr_address
 from shutil import move
