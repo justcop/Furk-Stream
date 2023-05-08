@@ -30,10 +30,34 @@ def scan_directory(directory):
     return torrent_files + magnet_files
 
 def upload_to_furk(api_key, torrent_path):
-    # ...
-    if json_response["status"] == "ok":
-        return [{"url": file["url"], "id": file["id"]} for file in json_response["files"] if file["type"] == "video"]
-    # ...
+    """
+    Uploads a torrent file or magnet link to Furk.net and returns a list of
+    direct download URLs for the video files.
+    """
+    url = "https://www.furk.net/api/file/upload"
+
+    if torrent_path.endswith(".torrent"):
+        with open(torrent_path, "rb") as f:
+            files = {"file": (os.path.basename(torrent_path), f)}
+            payload = {"api_key": api_key}
+            response = requests.post(url, data=payload, files=files)
+    elif torrent_path.endswith(".magnet"):
+        with open(torrent_path, "r") as f:
+            magnet_link = f.read().strip()
+        payload = {"api_key": api_key, "url": magnet_link}
+        response = requests.post(url, data=payload)
+    else:
+        raise ValueError("Invalid file type. Only .torrent and .magnet files are supported.")
+
+    if response.status_code == 200:
+        json_response = response.json()
+        if json_response["status"] == "ok":
+            return [{"url": file["url"], "id": file["id"]} for file in json_response["files"] if "video" in file["type"]]
+        else:
+            raise Exception(f"Error uploading file: {json_response['error']}")
+    else:
+        raise Exception(f"Error uploading file: {response.status_code}")
+
 
 def check_dl_status(api_key, file_ids):
     finished_files = []
