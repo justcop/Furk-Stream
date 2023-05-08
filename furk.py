@@ -57,11 +57,10 @@ def upload_to_furk(api_key, torrent_path):
     else:
         raise Exception(f"Error uploading file: {response.status_code} - {response.text} - {url}")
 
-def check_dl_status(api_key, file_ids):
-    finished_files = []
-    failed_files = []
+def check_dl_status(api_key, file_id):
+        finished_files = []
+        failed_files = []
 
-    for file_id in file_ids:
         url = f"https://www.furk.net/api/file/get?api_key={api_key}&id={file_id}&t_files=1"
         response = requests.get(url)
         print(url)
@@ -193,10 +192,10 @@ def main():
 
     for torrent_file in torrent_files:
         # Upload torrent/magnet file to Furk.net and get direct download URLs
-        download_links = upload_to_furk(furk_api, torrent_file)
+        file_id = upload_to_furk(furk_api, torrent_file)
 
         # Check the dl_status of each link
-        finished_links, failed_links = check_dl_status(furk_api, download_links)
+        finished_links, failed_links = check_dl_status(furk_api, file_id)
 
         # Generate .strm files and extract subtitles for finished_links
         strm_files = generate_strm_files(furk_api, finished_links, completed_path)
