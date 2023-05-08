@@ -215,4 +215,4 @@ def main():
     # Delete the torrent/magnet file
     delete_torrent(torrent_file)
 if name == "main":
-main()
+  main()
