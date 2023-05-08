@@ -60,6 +60,8 @@ def download_files():
                 print(f"Error uploading {filename}: {response.text}")
             else:
                 print(f"Successfully uploaded {filename}")
+                print(f"{response.text}")
+               
                 processed_files[filename] = []
 
     return processed_files
