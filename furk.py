@@ -66,18 +66,16 @@ def get_download_link(api_key, file_id):
         if json_response["status"] == "ok":
             file_obj = json_response["files"][0]
             if file_obj["is_ready"] == "1":
-                return file_obj["url_dl"]
+                return file_obj["id"]
         else:
             raise Exception(f"Error getting download link: {json_response['error']} - {file_obj.text}")
     else:
         raise Exception(f"Error getting download link: {response.status_code} - {file_obj.text}")
 
-def generate_strm_files(api_key, video_directory, finished_links):
+def generate_strm_files(api_key, video_directory, finished_torrents):
     strm_files = []
 
-    for link in finished_links:
-        # Get the file information
-        file_id = link.split("/")[-1]
+    for file_id in finished_torrents:
         url = f"https://www.furk.net/api/file/get?api_key={api_key}&id={file_id}&t_files=1"
         response = requests.get(url)
 
