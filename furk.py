@@ -30,36 +30,30 @@ def scan_directory(directory):
     return torrent_files + magnet_files
 
 def upload_to_furk(api_key, torrent_path):
-    """
-    Uploads a torrent/magnet file to Furk.net and returns the download URLs for any video files in the download.
-    """
-    logger = setup_logging()
-    logger.info(f"Uploading file: {torrent_path}")
+    # Check if the file is a .torrent or .magnet
+    extension = os.path.splitext(torrent_path)[1]
 
-    # Read the torrent/magnet file data
-    with open(torrent_path, "rb") as f:
-        data = f.read()
+    # Set up API request
+    url = f"https://www.furk.net/api/file/add?api_key={api_key}"
 
-    # Prepare the API endpoint URL and parameters
-    url = "https://www.furk.net/api/add"
-    params = {
-        "api_key": api_key,
-        "not_add_links": True,
-    }
-
-    # Upload the file data to Furk.net
-    response = requests.post(url, params=params, files={"file": data})
-
-    logger.debug(f"File upload request details: URL: {response.request.url} Headers: {response.request.headers} Data: {response.request.body}")
+    if extension == ".torrent":
+        with open(torrent_path, "rb") as f:
+            response = requests.post(url, file=f)
+    elif extension == ".magnet":
+        with open(torrent_path, "r") as f:
+            magnet_link = f.read()
+            response = requests.post(url, url=magnet_link)
+    else:
+        raise Exception(f"Invalid file type: {extension}")
 
     if response.status_code == 200:
         json_response = response.json()
         if json_response["status"] == "ok":
             return [{"url": file["url"], "id": file["id"]} for file in json_response["files"] if file["type"] == "video"]
         else:
-            raise Exception(f"Error adding file: {json_response['error']} - {response.text}")
+            raise Exception(f"Error uploading file: {json_response['error']} - {response.text}")
     else:
-        raise Exception(f"Error adding file: {response.status_code}")
+        raise Exception(f"Error uploading file: {response.status_code} - {response.text}")
 
 def check_dl_status(api_key, file_ids):
     finished_files = []
