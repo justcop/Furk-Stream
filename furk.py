@@ -1,186 +1,216 @@
-#! /usr/bin/env python3
-
 import os
-import requests
 import logging
-from guessit import guessit
-from urllib.parse import unquote
-from configs import furk_api, torrents_path, completed_path, sonarr_key, sonarr_address, radarr_key, radarr_address
 from logging.handlers import TimedRotatingFileHandler
+import requests
+import glob
+from guessit import guessit
+from configs import furk_api, torrents_path, completed_path, sonarr_key, sonarr_address, radarr_key, radarr_address
+from shutil import move
 
-# Set up logging to write logs to a file and the console
-log_format = '%(asctime)s %(levelname)s (Furk-Downloader) %(message)s'
-log_datefmt = '%Y-%m-%d %H:%M:%S'
+def setup_logging():
+    log_format = "%(asctime)s %(levelname)s (Furk-Downloader) %(message)s"
+    log_datefmt = "%Y-%m-%d %H:%M:%S"
+    handler = TimedRotatingFileHandler("furk.log", when="midnight", backupCount=7)
+    formatter = logging.Formatter(log_format, datefmt=log_datefmt)
+    handler.setFormatter(formatter)
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    logger.addHandler(handler)
+    return logger
 
-if os.path.exists("/config/home-assistant.log"):
-    logging.basicConfig(
-        handlers=[
-            logging.FileHandler("/config/home-assistant.log"),
-            TimedRotatingFileHandler("/config/Furk-Stream/furk.log", when="midnight", interval=1, backupCount=7),
-            logging.StreamHandler()
-        ],
-        format=log_format,
-        level=logging.INFO,
-        datefmt=log_datefmt
-    )
-else:
-    logging.basicConfig(
-        handlers=[
-            TimedRotatingFileHandler("furk.log", when="midnight", interval=1, backupCount=7),
-            logging.StreamHandler()
-        ],
-        format=log_format,
-        level=logging.INFO,
-        datefmt=log_datefmt
-    )
+def scan_directory(directory):
+    """
+    Scans the specified directory for any .torrent or .magnet files
+    Returns a list of the file paths
+    """
+    torrent_files = glob.glob(os.path.join(directory, "*.torrent"))
+    magnet_files = glob.glob(os.path.join(directory, "*.magnet"))
+    return torrent_files + magnet_files
 
+def upload_to_furk(api_key, torrent_path):
+    # ...
+    if json_response["status"] == "ok":
+        return [{"url": file["url"], "id": file["id"]} for file in json_response["files"] if file["type"] == "video"]
+    # ...
 
-def download_files():
-    processed_files = {}
-    for filename in os.listdir(torrents_path):
-        if filename.endswith(".torrent") or filename.endswith(".magnet"):
-            file_path = os.path.join(torrents_path, filename)
-            with open(file_path, "rb") as file:
-                if filename.endswith(".torrent"):
-                    response = requests.post(
-                        "https://www.furk.net/api/dl/add",
-                        headers={"Accept": "application/json"},
-                        params={"api_key": furk_api},
-                        files={"torrent": file},
-                    )
-                else:  # filename ends with ".magnet"
-                    magnet_link = file.read()
-                    response = requests.post(
-                        "https://www.furk.net/api/dl/add",
-                        headers={"Accept": "application/json"},
-                        params={"api_key": furk_api, "url": magnet_link},
-                    )
+def check_dl_status(api_key, file_ids):
+    finished_files = []
+    failed_files = []
 
-            if response.status_code != 200:
-                print(f"Error uploading {filename}: {response.text}")
+    for file_id in file_ids:
+        url = f"https://www.furk.net/api/file/get?api_key={api_key}&id={file_id}&t_files=1"
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            json_response = response.json()
+            if json_response["status"] == "ok":
+                dl_status = json_response["files"][0]["dl_status"]
+                if dl_status == "finished":
+                    finished_files.append(json_response["files"][0]["url_dl"])
+                elif dl_status == "failed":
+                    failed_files.append(json_response["files"][0]["url_dl"])
             else:
-                print(f"Successfully uploaded {filename}")
-                print(f"{response.text}")
-               
-                processed_files[filename] = []
-
-    return processed_files
-
-def get_video_urls():
-    """
-    Uses the Furk API to get the direct download URLs of each video file in the Furk download
-    and returns a list of the URLs.
-    """
-    video_urls = []
-    response = requests.get(
-        "https://www.furk.net/api/dl/get",
-        headers={"Accept": "application/json"},
-        params={"api_key": furk_api},
-    )
-
-    if response.status_code != 200:
-        print(f"Error fetching downloads: {response.text}")
-        return video_urls
-
-    downloads = response.json().get("downloads", {})
-    if not downloads:
-        print(response.json())
-        return video_urls
-
-    for download in downloads:
-        if download["status"] == "active":
-            for file in download["files"]:
-                if file["content_type"].startswith("video"):
-                    video_url = f"https://www.furk.net/ftv/{file['url_dl']}"
-                    video_urls.append(video_url)
-
-    return video_urls
-
-
-def update_sonarr(video_path):
-    """
-    Updates Sonarr with the downloaded episode and performs a "downloaded episode scan"
-    if a TV show is detected in the downloaded video file name.
-
-    Parameters:
-    video_path (str): The path to the downloaded video file
-
-    Returns:
-    None
-    """
-    filename = os.path.basename(video_path)
-    metadata = guessit(filename)
-
-    if metadata.get("type") == "episode":
-        data = {"name": "DownloadedEpisodesScan", "path": video_path}
-        response = requests.post(sonarr_url.format("command"), json=data).json()
-
-        if response.get("body") and response["body"].get("completionMessage"):
-            print(f"Sonarr update: {response['body']['completionMessage']}")
+                raise Exception(f"Error getting file details: {json_response['error']}")
         else:
-            print("Unable to update Sonarr.")
-    else:
-        print("Not an episode. Skipped updating Sonarr.")
+            raise Exception(f"Error getting file details: {response.status_code}")
 
-def update_radarr(video_path):
-    """
-    Updates Radarr with the downloaded movie and performs a "downloaded movie scan"
-    if a movie is detected in the downloaded video file name.
+    return finished_files, failed_files
 
-    Parameters:
-    video_path (str): The path to the downloaded video file
+def generate_strm_files(api_key, video_directory, finished_links):
+    strm_files = []
 
-    Returns:
-    None
-    """
-    filename = os.path.basename(video_path)
-    metadata = guessit(filename)
+    for link in finished_links:
+        # Get the file information
+        file_id = link.split("/")[-1]
+        url = f"https://www.furk.net/api/file/get?api_key={api_key}&id={file_id}&t_files=1"
+        response = requests.get(url)
 
-    if metadata.get("type") == "movie":
-        data = {"name": "DownloadedMoviesScan", "path": video_path}
-        response = requests.post(radarr_url.format("command"), json=data).json()
+        if response.status_code == 200:
+            json_response = response.json()
+            if json_response["status"] == "ok":
+                video_files = []
+                subtitle_files = []
 
-        if response.get("body") and response["body"].get("completionMessage"):
-            print(f"Radarr update: {response['body']['completionMessage']}")
+                # Find video and subtitle files in t_files data
+                for file in json_response["files"][0]["t_files"]:
+                    if "video" in file["ct"]:
+                        video_files.append(file)
+                    elif file["ct"] == "text/srt" and file["name"].endswith(".eng.srt"):
+                        subtitle_files.append(file)
+
+                # Create .strm files for each video file and download related subtitles
+                for video_file in video_files:
+                    strm_file_name = os.path.splitext(video_file["name"])[0] + ".strm"
+                    strm_file_path = os.path.join(video_directory, strm_file_name)
+
+                    with open(strm_file_path, "w") as strm_file:
+                        strm_file.write(video_file["url_dl"])
+
+                    strm_files.append(strm_file_path)
+
+                    # Download and save related subtitle files
+                    for subtitle_file in subtitle_files:
+                        if os.path.splitext(video_file["name"])[0] == os.path.splitext(subtitle_file["name"])[0].rstrip(".eng"):
+                            subtitle_url = subtitle_file["url_dl"]
+                            subtitle_file_name = os.path.join(video_directory, subtitle_file["name"])
+                            with requests.get(subtitle_url, stream=True) as r:
+                                r.raise_for_status()
+                                with open(subtitle_file_name, "wb") as f:
+                                    for chunk in r.iter_content(chunk_size=8192):
+                                        f.write(chunk)
+            else:
+                raise Exception(f"Error getting file details: {json_response['error']}")
         else:
-            print("Unable to update Radarr.")
-    else:
-        print("Not a movie. Skipped updating Radarr.")
+            raise Exception(f"Error getting file details: {response.status_code}")
 
-def delete_files(magnet_or_torrent_file):
-    """
-    Deletes the corresponding magnet or torrent file on successfully downloading the .strm file.
+    return strm_files
 
-    Parameters:
-    magnet_or_torrent_file (str): The path to the magnet or torrent file to be deleted
+import requests
+from guessit import guessit
 
-    Returns:
-    None
-    """
-    if os.path.exists(magnet_or_torrent_file):
-        try:
-            os.remove(magnet_or_torrent_file)
-            print(f"Deleted: {magnet_or_torrent_file}")
-        except OSError as e:
-            print(f"Error deleting file {magnet_or_torrent_file}: {e}")
-    else:
-        print(f"File not found: {magnet_or_torrent_file}")
+def update_sonarr(sonarr_key, sonarr_address, strm_files):
+    for strm_file in strm_files:
+        guess = guessit(strm_file)
+        if guess["type"] == "episode":
+            # Update Sonarr with the downloaded episode
+            sonarr_url = f"{sonarr_address}/api/episode?apikey={sonarr_key}"
+            headers = {"Content-Type": "application/json"}
+
+            # Perform a "downloaded episode scan"
+            params = {
+                "apikey": sonarr_key,
+                "path": os.path.dirname(strm_file),
+                "downloadClientId": "Furk",
+                "importMode": "Move",
+            }
+            response = requests.post(f"{sonarr_address}/api/command", json=params, headers=headers)
+
+            if response.status_code == 201:
+                logging.info(f"Sonarr updated with downloaded episode: {strm_file}")
+            else:
+                logging.warning(f"Failed to update Sonarr with downloaded episode: {strm_file}")
+
+def update_radarr(radarr_key, radarr_address, strm_files):
+    for strm_file in strm_files:
+        guess = guessit(strm_file)
+        if guess["type"] == "movie":
+            # Update Radarr with the downloaded movie
+            radarr_url = f"{radarr_address}/api/movie?apikey={radarr_key}"
+            headers = {"Content-Type": "application/json"}
+
+            # Perform a "downloaded movie scan"
+            params = {
+                "apikey": radarr_key,
+                "path": os.path.dirname(strm_file),
+                "downloadClientId": "Furk",
+                "importMode": "Move",
+            }
+            response = requests.post(f"{radarr_address}/api/command", json=params, headers=headers)
+
+            if response.status_code == 201:
+                logging.info(f"Radarr updated with downloaded movie: {strm_file}")
+            else:
+                logging.warning(f"Failed to update Radarr with downloaded movie: {strm_file}")
+
+def delete_torrent(torrent_path):
+    try:
+        os.remove(torrent_path)
+        logging.info(f"Deleted torrent/magnet file: {torrent_path}")
+    except Exception as e:
+        logging.error(f"Failed to delete torrent/magnet file: {torrent_path} - {str(e)}")
+
 
 def main():
-    processed_files = download_files()
-    video_urls = get_video_urls()
-    saved_strm_files = save_strm_files(video_urls, processed_files)
+    # Set up logging
+    logger = setup_logging()
 
-    for video_url in video_urls:
-        video_path = os.path.join(completed_path, unquote(video_url.split("/")[-1]))
-        update_sonarr(video_path)
-        update_radarr(video_path)
+    # Read inputs
+    furk_api_key = furk_api
+    torrent_directory = torrents_path
+    video_directory = completed_path
+    sonarr_api_key = sonarr_key
+    sonarr_address = sonarr_address
+    radarr_api_key = radarr_key
+    radarr_address = radarr_address
 
-    for magnet_or_torrent_file, strm_files in processed_files.items():
-        if strm_files:
-            delete_files(magnet_or_torrent_file)
+    # Scan the directory for torrent/magnet files
+    torrent_files = scan_directory(torrent_directory)
 
-if __name__ == "__main__":
-    main()
+    for torrent_file in torrent_files:
+        # Upload torrent/magnet file to Furk.net and get direct download URLs
+        download_links = upload_to_furk(furk_api_key, torrent_file)
 
+        # Check the dl_status of each link
+        finished_links, failed_links = check_dl_status(furk_api_key, download_links)
 
+        # Generate .strm files and extract subtitles for finished_links
+        strm_files = generate_strm_files(furk_api_key, finished_links, video_directory)
+
+        for strm_file in strm_files:
+            # Move completed strm file to the completed path
+            completed_strm_file = os.path.join(completed_path, os.path.basename(strm_file))
+            move(strm_file, completed_strm_file)
+
+            # Update Sonarr and Radarr as appropriate
+            guess = guessit(os.path.basename(completed_strm_file))
+            if "episode" in guess and "season" in guess:
+                update_sonarr(sonarr_api_key, sonarr_address, completed_strm_file)
+            elif "movie" in guess:
+                update_radarr(radarr_api_key, radarr_address, completed_strm_file)
+            else:
+                logger.warning(f"Unrecognized file: {completed_strm_file}")
+                
+    # Update Sonarr and Radarr for failed_links
+    for failed_link in failed_links:
+        guess = guessit(os.path.basename(failed_link))
+        if "episode" in guess and "season" in guess:
+            update_sonarr(sonarr_api_key, sonarr_address, failed_link)
+        elif "movie" in guess:
+            update_radarr(radarr_api_key, radarr_address, failed_link)
+        else:
+            logger.warning(f"Unrecognized failed file: {failed_link}")
+
+    # Delete the torrent/magnet file
+    delete_torrent(torrent_file)
+if name == "main":
+main()
