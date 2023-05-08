@@ -76,7 +76,7 @@ def check_dl_status(api_key, file_ids):
                 elif dl_status == "failed":
                     failed_files.append(json_response["files"][0]["url_dl"])
             else:
-                raise Exception(f"Error getting file details: {json_response['error']}")
+                raise Exception(f"Error uploading file: {json_response['error']} - {response.text}")
         else:
             raise Exception(f"Error getting file details: {response.status_code}")
 
