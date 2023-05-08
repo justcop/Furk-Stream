@@ -64,8 +64,8 @@ def get_download_link(api_key, file_id):
     if response.status_code == 200:
         json_response = response.json()
         if json_response["status"] == "ok":
-            file_obj = json_response["files"]
-            if file_obj["is_ready"] == 1:
+            file_obj = json_response["files"][0]
+            if file_obj["is_ready"] == "1":
                 return file_obj["url_dl"]
         else:
             raise Exception(f"Error getting download link: {json_response['error']} - {file_obj.text}")
