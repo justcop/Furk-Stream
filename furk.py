@@ -52,9 +52,9 @@ def upload_to_furk(api_key, torrent_path):
         if json_response["status"] == "ok":
             return [{"url": file["url"], "id": file["id"]} for file in json_response["files"] if file["type"] == "video"]
         else:
-            raise Exception(f"Error uploading file: {json_response['error']} - {response.text}")
+            raise Exception(f"Error uploading file: {json_response['error']} - {response.text} - {url}")
     else:
-        raise Exception(f"Error uploading file: {response.status_code} - {response.text}")
+        raise Exception(f"Error uploading file: {response.status_code} - {response.text} - {url}")
 
 def check_dl_status(api_key, file_ids):
     finished_files = []
