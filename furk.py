@@ -45,7 +45,7 @@ def upload_to_furk(api_key, torrent_path):
 
     # Make API request
     url = f'https://www.furk.net/api/dl/add?url={magnet}&api_key={api_key}'
-    response = requests.get(base_url)
+    response = requests.get(url)
     
     if response.status_code == 200:
         json_response = response.json()
