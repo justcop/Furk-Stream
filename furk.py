@@ -187,7 +187,7 @@ def main():
         file_id = upload_to_furk(furk_api, torrent_file)
 
         # Check the dl_status of each link
-        finished_links, failed_links = check_dl_status(furk_api, file_id)
+        finished_links, failed_links = def get_download_link(furk_api, file_id)
 
         # Generate .strm files and extract subtitles for finished_links
         strm_files = generate_strm_files(furk_api, finished_links, completed_path)
