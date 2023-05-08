@@ -49,7 +49,7 @@ def download_files():
                         files={"torrent": file},
                     )
                 else:  # filename ends with ".magnet"
-                    magnet_link = file.read().decode("utf-8")
+                    magnet_link = file.read()
                     response = requests.post(
                         "https://www.furk.net/api/dl/add",
                         headers={"Accept": "application/json"},
