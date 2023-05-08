@@ -63,10 +63,10 @@ def check_dl_status(api_key, file_id):
 
         url = f"https://www.furk.net/api/file/get?api_key={api_key}&id={file_id}&t_files=1"
         response = requests.get(url)
-        print(url)
         
         if response.status_code == 200:
             json_response = response.json()
+            print(json_response)
             if json_response["status"] == "ok":
                 dl_status = json_response["files"][0]["dl_status"]
                 if dl_status == "finished":
