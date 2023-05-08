@@ -33,6 +33,7 @@ def upload_to_furk(api_key, torrent_path):
     """
     Uploads a torrent/magnet file to Furk.net and returns the download URLs for any video files in the download.
     """
+    logger = setup_logging()
     logger.info(f"Uploading file: {torrent_path}")
 
     # Read the torrent/magnet file data
