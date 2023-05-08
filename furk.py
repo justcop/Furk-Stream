@@ -7,19 +7,32 @@ from guessit import guessit
 from urllib.parse import unquote
 from configs import furk_api, torrents_path, completed_path, sonarr_key, sonarr_address, radarr_key, radarr_address
 
-try:
-    logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),
-                                  TimedRotatingFileHandler("/config/Furk-Stream/furk.log", when="midnight", interval=1, backupCount=7),
-                                  logging.StreamHandler()],
-                        format='%(asctime)s %(levelname)s (Furk-Downloader) %(message)s',
-                        level=logging.INFO,
-                        datefmt='%Y-%m-%d %H:%M:%S')
-except:
-    logging.basicConfig(handlers=[TimedRotatingFileHandler("furk.log", when="midnight", interval=1, backupCount=7),
-                                  logging.StreamHandler()],
-                        format='%(asctime)s %(levelname)s (Furk-Downloader) %(message)s',
-                        level=logging.INFO,
-                        datefmt='%Y-%m-%d %H:%M:%S')
+# Set up logging to write logs to a file and the console
+log_format = '%(asctime)s %(levelname)s (Furk-Downloader) %(message)s'
+log_datefmt = '%Y-%m-%d %H:%M:%S'
+
+if os.path.exists("/config/home-assistant.log"):
+    logging.basicConfig(
+        handlers=[
+            logging.FileHandler("/config/home-assistant.log"),
+            TimedRotatingFileHandler("/config/Furk-Stream/furk.log", when="midnight", interval=1, backupCount=7),
+            logging.StreamHandler()
+        ],
+        format=log_format,
+        level=logging.INFO,
+        datefmt=log_datefmt
+    )
+else:
+    logging.basicConfig(
+        handlers=[
+            TimedRotatingFileHandler("furk.log", when="midnight", interval=1, backupCount=7),
+            logging.StreamHandler()
+        ],
+        format=log_format,
+        level=logging.INFO,
+        datefmt=log_datefmt
+    )
+
 
 def download_files():
     processed_files = {}
