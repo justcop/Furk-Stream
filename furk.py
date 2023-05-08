@@ -50,6 +50,8 @@ def upload_to_furk(api_key, torrent_path):
     if response.status_code == 200:
         json_response = response.json()
         if json_response["status"] == "ok":
+            print({response.text})
+            print({url})
             return [{"url": file["url"], "id": file["id"]} for file in json_response["files"] if file["type"] == "video"]
         else:
             raise Exception(f"Error uploading file: {json_response['error']} - {response.text} - {url}")
