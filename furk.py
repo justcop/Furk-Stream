@@ -34,7 +34,7 @@ def upload_to_furk(api_key, torrent_path):
     Uploads a torrent file or magnet link to Furk.net and returns a list of
     direct download URLs for the video files.
     """
-    url = "https://www.furk.net/api/file/upload"
+    url = "https://www.furk.net/api/file/add"
 
     if torrent_path.endswith(".torrent"):
         with open(torrent_path, "rb") as f:
