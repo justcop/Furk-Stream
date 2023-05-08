@@ -42,6 +42,7 @@ def upload_to_furk(api_key, torrent_path):
     elif extension == ".magnet":
         with open(torrent_path, "r") as f:
             magnet_link = f.read()
+            print(magnet_link)
             response = requests.post(command, url=magnet_link)
     else:
         raise Exception(f"Invalid file type: {extension}")
