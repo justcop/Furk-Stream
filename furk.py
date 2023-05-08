@@ -66,7 +66,7 @@ def check_availability(api_key, file_id):
         if json_response["status"] == "ok":
             file_obj = json_response["files"][0]
             if file_obj["is_ready"] == "1":
-                return true
+                return True
         else:
             raise Exception(f"Error getting download link: {json_response['error']} - {file_obj.text}")
     else:
