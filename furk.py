@@ -80,12 +80,11 @@ def get_video_urls():
         print(f"Error fetching downloads: {response.text}")
         return video_urls
 
-    json_response = response.json()
-    if "downloads" not in json_response:
-        print("Download is not yet ready in Furk.")
+    downloads = response.json().get("downloads", {})
+    if not downloads:
+        print(response.json())
         return video_urls
 
-    downloads = json_response["downloads"]
     for download in downloads:
         if download["status"] == "active":
             for file in download["files"]:
@@ -95,39 +94,6 @@ def get_video_urls():
 
     return video_urls
 
-
-def save_strm_files(video_urls, processed_files):
-    for video_url in video_urls:
-        file_name = unquote(video_url.split("/")[-1])
-        strm_file_name = os.path.splitext(file_name)[0] + ".strm"
-
-        with open(os.path.join(completed_path, strm_file_name), "w") as strm_file:
-            strm_file.write(video_url)
-
-        # Add strm_file_name to the list of .strm files associated with the magnet or torrent file
-        magnet_or_torrent_file_base = os.path.splitext(os.path.basename(file_name))[0]
-        for key in processed_files.keys():
-            if key.startswith(magnet_or_torrent_file_base):
-                processed_files[key].append(strm_file_name)
-                break
-
-        # Save subtitle files
-        subtitle_url = video_url.replace("/ftv/", "/fs/")
-        subtitle_response = requests.get(subtitle_url)
-        if subtitle_response.status_code == 200:
-            subtitles = subtitle_response.json()["subs"]
-            for subtitle in subtitles:
-                subtitle_url = f"https://www.furk.net{subtitle['url']}"
-                subtitle_file_name = os.path.join(
-                    completed_path, os.path.basename(subtitle["url"])
-                )
-                with requests.get(subtitle_url, stream=True) as r:
-                    r.raise_for_status()
-                    with open(subtitle_file_name, "wb") as f:
-                        for chunk in r.iter_content(chunk_size=8192):
-                            f.write(chunk)
-
-    return processed_files
 
 def update_sonarr(video_path):
     """
