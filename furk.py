@@ -78,7 +78,7 @@ def check_dl_status(api_key, file_id):
         else:
             raise Exception(f"Error getting file details: {response.status_code}")
 
-    return finished_files, failed_files
+        return finished_files, failed_files
 
 def generate_strm_files(api_key, video_directory, finished_links):
     strm_files = []
