@@ -1,32 +1,11 @@
 #! /usr/bin/env python3
 
-# Import necessary modules and packages
 import os
-import glob
 import requests
-import json
-import ast
-import logging
-import urllib
-import time
-import html5lib
-
 from guessit import guessit
-from bs4 import BeautifulSoup
-from torrentool.api import Torrent
-from logging.handlers import TimedRotatingFileHandler
+from urllib.parse import unquote
+from configs import furk_api, torrents_path, completed_path, sonarr_key, sonarr_address, radarr_key, radarr_address
 
-# Import configuration constants from separate file
-from configs import furk_api
-from configs import torrents_path
-from configs import completed_path
-from configs import sonarr_key
-from configs import sonarr_address
-from configs import radarr_key
-from configs import radarr_address
-from configs import permissions_change
-
-# Set up logging to write logs to a file and the console
 try:
     logging.basicConfig(handlers=[logging.FileHandler("/config/home-assistant.log"),
                                   TimedRotatingFileHandler("/config/Furk-Stream/furk.log", when="midnight", interval=1, backupCount=7),
@@ -41,116 +20,178 @@ except:
                         level=logging.INFO,
                         datefmt='%Y-%m-%d %H:%M:%S')
 
-# Set up URLs for Sonarr and Radarr API requests
-sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
-radarr_url = radarr_address + '/api/{}?apikey=' + radarr_key
+def download_files():
+    processed_files = {}
+    for filename in os.listdir(torrents_path):
+        if filename.endswith(".torrent") or filename.endswith(".magnet"):
+            file_path = os.path.join(torrents_path, filename)
+            with open(file_path, "rb") as file:
+                if filename.endswith(".torrent"):
+                    response = requests.post(
+                        "https://www.furk.net/api/dl/add",
+                        headers={"Accept": "application/json"},
+                        params={"api_key": furk_api},
+                        files={"torrent": file},
+                    )
+                else:  # filename ends with ".magnet"
+                    magnet_link = file.read().decode("utf-8")
+                    response = requests.post(
+                        "https://www.furk.net/api/dl/add",
+                        headers={"Accept": "application/json"},
+                        params={"api_key": furk_api, "url": magnet_link},
+                    )
 
-# Set up variables for tracking processed files and retries
-timeout = 0
-processed = 0
-retry = 0
-
-# Convert all .torrent files in the torrents_path directory to magnet links
-for filename in glob.glob(os.path.join(torrents_path, '*.torrent')):
-    torrent = Torrent.from_file(filename)
-    with open(filename + ".magnet", 'w') as f:
-        f.write(torrent.magnet_link)
-    os.remove(filename)
-
-# Iterate through all .magnet files in the torrents_path directory
-for filename in glob.glob(os.path.join(torrents_path, '*.magnet')):
-    with open(filename, 'r') as f:
-        magnet = f.read()
-        logging.info("Uploading \"" + ((filename.rsplit("/")[-1]).rsplit(".", 1)[0]) + "\" to Furk")
-
-        # Try to add magnet link to Furk
-        try:
-            base_url = 'https://www.furk.net/api/dl/add?url={}&api_key={}'
-            data = (requests.get(base_url.format(magnet, furk_api))).json()
-        except:
-            # Log if no response from Furk
-            logging.error("Unable to get valid Furk response for this torrent.")
-            logging.error(str(data))
-            continue
-
-        # Check API response for a file object to see if download has completed
-        try:
-            files = data["files"][0]
-            logging.info("Checking " + data["files"][0]["name"] + " in Furk")
-        except:
-            try:
-                if data["torrent"]["dl_status"] == "active" or "finished":
-                    pass
-            except:
-                # Log if API response is unexpected or does not contain a file object
-                logging.error("Furk returned unexpected response, without file date")
-                logging.error(str(data))
-                continue
+            if response.status_code != 200:
+                print(f"Error uploading {filename}: {response.text}")
             else:
-            # Log if file is not yet ready for download and increment retry counter
-              logging.warning("Furk file \"" + ((filename.rsplit("/")[-1]).rsplit(".", 1)[0]) + "\" is not yet ready for download")
-              retry += 1
+                print(f"Successfully uploaded {filename}")
+                processed_files[filename] = []
+
+    return processed_files
+
+def get_video_urls():
+    """
+    Uses the Furk API to get the direct download URLs of each video file in the Furk download
+    and returns a list of the URLs.
+    """
+    video_urls = []
+    response = requests.get(
+        "https://www.furk.net/api/dl/get",
+        headers={"Accept": "application/json"},
+        params={"api_key": furk_api},
+    )
+
+    if response.status_code != 200:
+        print(f"Error fetching downloads: {response.text}")
+        return video_urls
+
+    downloads = response.json()["downloads"]
+    for download in downloads:
+        if download["status"] == "active":
+            for file in download["files"]:
+                if file["content_type"].startswith("video"):
+                    video_url = f"https://www.furk.net/ftv/{file['url_dl']}"
+                    video_urls.append(video_url)
+
+    return video_urls
+
+def save_strm_files(video_urls, processed_files):
+    for video_url in video_urls:
+        file_name = unquote(video_url.split("/")[-1])
+        strm_file_name = os.path.splitext(file_name)[0] + ".strm"
+
+        with open(os.path.join(completed_path, strm_file_name), "w") as strm_file:
+            strm_file.write(video_url)
+
+        # Add strm_file_name to the list of .strm files associated with the magnet or torrent file
+        magnet_or_torrent_file_base = os.path.splitext(os.path.basename(file_name))[0]
+        for key in processed_files.keys():
+            if key.startswith(magnet_or_torrent_file_base):
+                processed_files[key].append(strm_file_name)
+                break
+
+        # Save subtitle files
+        subtitle_url = video_url.replace("/ftv/", "/fs/")
+        subtitle_response = requests.get(subtitle_url)
+        if subtitle_response.status_code == 200:
+            subtitles = subtitle_response.json()["subs"]
+            for subtitle in subtitles:
+                subtitle_url = f"https://www.furk.net{subtitle['url']}"
+                subtitle_file_name = os.path.join(
+                    completed_path, os.path.basename(subtitle["url"])
+                )
+                with requests.get(subtitle_url, stream=True) as r:
+                    r.raise_for_status()
+                    with open(subtitle_file_name, "wb") as f:
+                        for chunk in r.iter_content(chunk_size=8192):
+                            f.write(chunk)
+
+    return processed_files
+
+def update_sonarr(video_path):
+    """
+    Updates Sonarr with the downloaded episode and performs a "downloaded episode scan"
+    if a TV show is detected in the downloaded video file name.
+
+    Parameters:
+    video_path (str): The path to the downloaded video file
+
+    Returns:
+    None
+    """
+    filename = os.path.basename(video_path)
+    metadata = guessit(filename)
+
+    if metadata.get("type") == "episode":
+        data = {"name": "DownloadedEpisodesScan", "path": video_path}
+        response = requests.post(sonarr_url.format("command"), json=data).json()
+
+        if response.get("body") and response["body"].get("completionMessage"):
+            print(f"Sonarr update: {response['body']['completionMessage']}")
         else:
-          # Try to get playlist file from Furk API response
-          try:
-            xspfurl = urllib.request.urlopen(files["url_pls"])
-          except:
-            # Log if playlist file is not yet available and increment retry counter
-            logging.warning("Furk file is not yet ready for download")
-            retry += 1
-          else:
-            # Parse playlist file using BeautifulSoup and extract details using guessit
-            xspf = xspfurl.read()
-            soup = BeautifulSoup(xspf, "html5lib")
-            title = soup('title')
-            strmurl = soup('location')
+            print("Unable to update Sonarr.")
+    else:
+        print("Not an episode. Skipped updating Sonarr.")
 
-            try:
-                for x in range(len(strmurl)):
-                    try:
-                        metadata = guessit(str(title[x + 1].text))
-                        if metadata.get('type') == 'episode':
-                            path = completed_path + '/' + str(metadata.get('title')) + ' - ' + 'S' + str(metadata.get('season')) + "E" + str(metadata.get('episode')) + ' - [' + str(metadata.get('source')) + '-' + str(metadata.get('screen_size')) + ']'
-                            episode = str(metadata.get('title')) + ' - ' + 'S' + str(metadata.get('season')) + 'E' + str(metadata.get('episode')) + ' - [' + str(metadata.get('source')) + ' - ' + str(metadata.get('screen_size')) + ']'
-                            if len(strmurl) > 1:
-                                logging.info("Episode processing " + episode)
-                        if metadata.get('type') == 'movie':
-                            path = completed_path + '/' + ((filename.rsplit("/")[-1]).rsplit(".", 1)[0])
-                            episode = str(metadata.get('title'))
-                        path = completed_path + '/' + ((filename.rsplit("/")[-1]).rsplit(".", 1)[0])
-                        try:
-                            os.mkdir(path)
-                        except FileExistsError:
-                            pass
-                        strm = open(path + '/' + episode + '.strm', 'w')
-                        strm.write(strmurl[x].string)
-                        strm.close()
-                        processed += 1
-                    except Exception as e:
-                        # Log if unable to write a valid .strm file and log the error
-                        logging.error("Unable to write a valid .strm file")
-                        logging.error(e)
-            except Exception as e:
-                # Log if unable to process entire playlist file and log the error
-                logging.error("Unable to process entire .strm file")
-                logging.error(e)
-            else:
-                # Log if processing is complete and remove the .magnet file
-                try:
-                    logging.info("Completed processing " + data["files"][0]["name"])
-                    os.remove(filename)
-                    # Update Sonarr or Radarr to advise that episode is ready
-                    if metadata.get('type') == 'episode':
-                        data = {'name': 'DownloadedEpisodesScan', 'path': path}
-                        response = (requests.post(sonarr_url.format('command'), json=data)).json()
-                    elif metadata.get('type') == 'movie':
-                        data = {'name': 'DownloadedMoviesScan', 'path': path}
-                        response = (requests.post(radarr_url.format('command'), json=data)).json()
-                except:
-                    try:
-                        logging.info(response['body']['completionMessage'])
-                    finally:
-                        # Log if unable to update Sonarr or Radarr
-                        logging.warning("Unable to update Sonarr or Radarr")
-                       
-logging.info(str(processed) + " files have been processed.")
+def update_radarr(video_path):
+    """
+    Updates Radarr with the downloaded movie and performs a "downloaded movie scan"
+    if a movie is detected in the downloaded video file name.
+
+    Parameters:
+    video_path (str): The path to the downloaded video file
+
+    Returns:
+    None
+    """
+    filename = os.path.basename(video_path)
+    metadata = guessit(filename)
+
+    if metadata.get("type") == "movie":
+        data = {"name": "DownloadedMoviesScan", "path": video_path}
+        response = requests.post(radarr_url.format("command"), json=data).json()
+
+        if response.get("body") and response["body"].get("completionMessage"):
+            print(f"Radarr update: {response['body']['completionMessage']}")
+        else:
+            print("Unable to update Radarr.")
+    else:
+        print("Not a movie. Skipped updating Radarr.")
+
+def delete_files(magnet_or_torrent_file):
+    """
+    Deletes the corresponding magnet or torrent file on successfully downloading the .strm file.
+
+    Parameters:
+    magnet_or_torrent_file (str): The path to the magnet or torrent file to be deleted
+
+    Returns:
+    None
+    """
+    if os.path.exists(magnet_or_torrent_file):
+        try:
+            os.remove(magnet_or_torrent_file)
+            print(f"Deleted: {magnet_or_torrent_file}")
+        except OSError as e:
+            print(f"Error deleting file {magnet_or_torrent_file}: {e}")
+    else:
+        print(f"File not found: {magnet_or_torrent_file}")
+
+def main():
+    processed_files = download_files()
+    video_urls = get_video_urls()
+    saved_strm_files = save_strm_files(video_urls, processed_files)
+
+    for video_url in video_urls:
+        video_path = os.path.join(completed_path, unquote(video_url.split("/")[-1]))
+        update_sonarr(video_path)
+        update_radarr(video_path)
+
+    for magnet_or_torrent_file, strm_files in processed_files.items():
+        if strm_files:
+            delete_files(magnet_or_torrent_file)
+
+if __name__ == "__main__":
+    main()
+
+
