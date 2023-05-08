@@ -80,7 +80,12 @@ def get_video_urls():
         print(f"Error fetching downloads: {response.text}")
         return video_urls
 
-    downloads = response.json()["downloads"]
+    json_response = response.json()
+    if "downloads" not in json_response:
+        print("Download is not yet ready in Furk.")
+        return video_urls
+
+    downloads = json_response["downloads"]
     for download in downloads:
         if download["status"] == "active":
             for file in download["files"]:
@@ -89,6 +94,7 @@ def get_video_urls():
                     video_urls.append(video_url)
 
     return video_urls
+
 
 def save_strm_files(video_urls, processed_files):
     for video_url in video_urls:
