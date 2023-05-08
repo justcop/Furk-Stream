@@ -30,7 +30,7 @@ def scan_directory(directory):
     return torrent_files + magnet_files
 
 def upload_to_furk(api_key, torrent_path):
-    # Check if the file is a .torrent or .magnet and get the necessary data for the request
+    # Cet data from .torrent or .magnet file
     extension = os.path.splitext(torrent_path)[1]
     if extension == ".torrent":
         with open(torrent_path, "rb") as f:
