@@ -30,11 +30,8 @@ def scan_directory(directory):
     return torrent_files + magnet_files
 
 def upload_to_furk(api_key, torrent_path):
-    # Check if the file is a .torrent or .magnet
+    # Check if the file is a .torrent or .magnet and get the necessary data for the request
     extension = os.path.splitext(torrent_path)[1]
-
-    # Set up API request
-    url = f"https://www.furk.net/api/file/add?api_key={api_key}"
     if extension == ".torrent":
         with open(torrent_path, "rb") as f:
             torrent = Torrent.from_file(f)
@@ -42,10 +39,10 @@ def upload_to_furk(api_key, torrent_path):
     elif extension == ".magnet":
         with open(torrent_path, "r") as f:
             magnet = f.read()
-            response = requests.get(command, url=magnet_link)
     else:
         raise Exception(f"Invalid file type: {extension}")
-    
+
+    # Make API request
     url = f'https://www.furk.net/api/dl/add?url={magnet}&api_key={api_key}'
     response = requests.get(base_url)
     
