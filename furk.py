@@ -58,7 +58,7 @@ def upload_to_furk(api_key, torrent_path):
         raise Exception(f"Error uploading file: {response.status_code} - {response.text} - {url}")
 
 def get_download_link(api_key, file_id):
-    url = f"https://www.furk.net/api/file/id/{file_id}?api_key={api_key}"
+    url = f"https://www.furk.net/api/file/get?id={file_id}&api_key={api_key}"
     response = requests.get(url)
 
     if response.status_code == 200:
