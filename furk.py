@@ -9,61 +9,6 @@ from guessit import guessit
 from configs import furk_api, torrents_path, completed_path, sonarr_key, sonarr_address, radarr_key, radarr_address
 from shutil import move
 
-def main():
-    # Set up logging
-    logger = setup_logging()
-
-    # Read inputs
-    furk_api_key = furk_api
-    torrent_directory = torrents_path
-    video_directory = completed_path
-    sonarr_api_key = sonarr_key
-    sonarr_address = sonarr_address
-    radarr_api_key = radarr_key
-    radarr_address = radarr_address
-
-    # Scan the directory for torrent/magnet files
-    torrent_files = scan_directory(torrent_directory)
-
-    for torrent_file in torrent_files:
-        # Upload torrent/magnet file to Furk.net and get direct download URLs
-        download_links = upload_to_furk(furk_api_key, torrent_file)
-
-        # Check the dl_status of each link
-        finished_links, failed_links = check_dl_status(furk_api_key, download_links)
-
-        # Generate .strm files and extract subtitles for finished_links
-        strm_files = generate_strm_files(furk_api_key, finished_links, video_directory)
-
-        for strm_file in strm_files:
-            # Move completed strm file to the completed path
-            completed_strm_file = os.path.join(completed_path, os.path.basename(strm_file))
-            move(strm_file, completed_strm_file)
-
-            # Update Sonarr and Radarr as appropriate
-            guess = guessit(os.path.basename(completed_strm_file))
-            if "episode" in guess and "season" in guess:
-                update_sonarr(sonarr_api_key, sonarr_address, completed_strm_file)
-            elif "movie" in guess:
-                update_radarr(radarr_api_key, radarr_address, completed_strm_file)
-            else:
-                logger.warning(f"Unrecognized file: {completed_strm_file}")
-                
-    # Update Sonarr and Radarr for failed_links
-    for failed_link in failed_links:
-        guess = guessit(os.path.basename(failed_link))
-        if "episode" in guess and "season" in guess:
-            update_sonarr(sonarr_api_key, sonarr_address, failed_link)
-        elif "movie" in guess:
-            update_radarr(radarr_api_key, radarr_address, failed_link)
-        else:
-            logger.warning(f"Unrecognized failed file: {failed_link}")
-
-    # Delete the torrent/magnet file
-    delete_torrent(torrent_file)
-if __name__ == "__main__":
-    main()
-
 def setup_logging():
     log_format = "%(asctime)s %(levelname)s (Furk-Downloader) %(message)s"
     log_datefmt = "%Y-%m-%d %H:%M:%S"
@@ -215,3 +160,58 @@ def delete_torrent(torrent_path):
         logging.info(f"Deleted torrent/magnet file: {torrent_path}")
     except Exception as e:
         logging.error(f"Failed to delete torrent/magnet file: {torrent_path} - {str(e)}")
+
+def main():
+    # Set up logging
+    logger = setup_logging()
+
+    # Read inputs
+    furk_api_key = furk_api
+    torrent_directory = torrents_path
+    video_directory = completed_path
+    sonarr_api_key = sonarr_key
+    sonarr_address = sonarr_address
+    radarr_api_key = radarr_key
+    radarr_address = radarr_address
+
+    # Scan the directory for torrent/magnet files
+    torrent_files = scan_directory(torrent_directory)
+
+    for torrent_file in torrent_files:
+        # Upload torrent/magnet file to Furk.net and get direct download URLs
+        download_links = upload_to_furk(furk_api_key, torrent_file)
+
+        # Check the dl_status of each link
+        finished_links, failed_links = check_dl_status(furk_api_key, download_links)
+
+        # Generate .strm files and extract subtitles for finished_links
+        strm_files = generate_strm_files(furk_api_key, finished_links, video_directory)
+
+        for strm_file in strm_files:
+            # Move completed strm file to the completed path
+            completed_strm_file = os.path.join(completed_path, os.path.basename(strm_file))
+            move(strm_file, completed_strm_file)
+
+            # Update Sonarr and Radarr as appropriate
+            guess = guessit(os.path.basename(completed_strm_file))
+            if "episode" in guess and "season" in guess:
+                update_sonarr(sonarr_api_key, sonarr_address, completed_strm_file)
+            elif "movie" in guess:
+                update_radarr(radarr_api_key, radarr_address, completed_strm_file)
+            else:
+                logger.warning(f"Unrecognized file: {completed_strm_file}")
+                
+    # Update Sonarr and Radarr for failed_links
+    for failed_link in failed_links:
+        guess = guessit(os.path.basename(failed_link))
+        if "episode" in guess and "season" in guess:
+            update_sonarr(sonarr_api_key, sonarr_address, failed_link)
+        elif "movie" in guess:
+            update_radarr(radarr_api_key, radarr_address, failed_link)
+        else:
+            logger.warning(f"Unrecognized failed file: {failed_link}")
+
+    # Delete the torrent/magnet file
+    delete_torrent(torrent_file)
+if __name__ == "__main__":
+    main()
