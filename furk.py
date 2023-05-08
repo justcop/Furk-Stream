@@ -34,15 +34,15 @@ def upload_to_furk(api_key, torrent_path):
     extension = os.path.splitext(torrent_path)[1]
 
     # Set up API request
-    url = f"https://www.furk.net/api/file/add?api_key={api_key}"
+    command = f"https://www.furk.net/api/file/add?api_key={api_key}"
 
     if extension == ".torrent":
         with open(torrent_path, "rb") as f:
-            response = requests.post(url, file=f)
+            response = requests.post(command, file=f)
     elif extension == ".magnet":
         with open(torrent_path, "r") as f:
             magnet_link = f.read()
-            response = requests.post(url, url=magnet_link)
+            response = requests.post(command, url=magnet_link)
     else:
         raise Exception(f"Invalid file type: {extension}")
 
