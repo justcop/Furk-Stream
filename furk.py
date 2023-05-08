@@ -78,6 +78,8 @@ def generate_strm_files(api_key, video_directory, finished_torrents):
     for file_id in finished_torrents:
         url = f"https://www.furk.net/api/file/get?api_key={api_key}&id={file_id}&t_files=1"
         response = requests.get(url)
+        print(url)
+        print(response)
 
         if response.status_code == 200:
             json_response = response.json()
@@ -118,9 +120,6 @@ def generate_strm_files(api_key, video_directory, finished_torrents):
             raise Exception(f"Error getting file details: {response.status_code}")
 
     return strm_files
-
-import requests
-from guessit import guessit
 
 def update_sonarr(sonarr_key, sonarr_address, strm_files):
     for strm_file in strm_files:
