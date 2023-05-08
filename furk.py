@@ -6,6 +6,7 @@ import logging
 from guessit import guessit
 from urllib.parse import unquote
 from configs import furk_api, torrents_path, completed_path, sonarr_key, sonarr_address, radarr_key, radarr_address
+from logging.handlers import TimedRotatingFileHandler
 
 # Set up logging to write logs to a file and the console
 log_format = '%(asctime)s %(levelname)s (Furk-Downloader) %(message)s'
