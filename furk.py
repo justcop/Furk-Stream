@@ -57,28 +57,20 @@ def upload_to_furk(api_key, torrent_path):
     else:
         raise Exception(f"Error uploading file: {response.status_code} - {response.text} - {url}")
 
-def check_dl_status(api_key, file_id):
-        finished_files = []
-        failed_files = []
+def get_download_link(api_key, file_id):
+    url = f"https://www.furk.net/api/file/id/{file_id}?api_key={api_key}"
+    response = requests.get(url)
 
-        url = f"https://www.furk.net/api/file/get?api_key={api_key}&id={file_id}&t_files=1"
-        response = requests.get(url)
-        
-        if response.status_code == 200:
-            json_response = response.json()
-            print(json_response)
-            if json_response["status"] == "ok":
-                dl_status = json_response["files"][0]["dl_status"]
-                if dl_status == "finished":
-                    finished_files.append(json_response["files"][0]["url_dl"])
-                elif dl_status == "failed":
-                    failed_files.append(json_response["files"][0]["url_dl"])
-            else:
-                raise Exception(f"Error uploading file: {json_response['error']} - {response.text}")
+    if response.status_code == 200:
+        json_response = response.json()
+        if json_response["status"] == "ok":
+            file_obj = json_response["file"]
+            if file_obj["is_ready"] == "1":
+                return file_obj["url_dl"]
         else:
-            raise Exception(f"Error getting file details: {response.status_code}")
-
-        return finished_files, failed_files
+            raise Exception(f"Error getting download link: {json_response['error']} - {response.text}")
+    else:
+        raise Exception(f"Error getting download link: {response.status_code} - {response.text}")
 
 def generate_strm_files(api_key, video_directory, finished_links):
     strm_files = []
