@@ -72,7 +72,7 @@ def check_availability(api_key, file_id):
     else:
         raise Exception(f"Error getting download link: {response.status_code} - {file_obj.text}")
 
-def generate_strm_files(api_key, video_directory, finished_torrents):
+def generate_strm_files(api_key, file_id, video_directory):
     strm_files = []
 
     for file_id in finished_torrents:
