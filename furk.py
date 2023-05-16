@@ -176,8 +176,9 @@ def main():
     logger = setup_logging()
 
     # Scan the directory for torrent/magnet files
+    print("Searching torrent directory for torrent/magnet files)
     torrent_files = scan_directory(torrents_path)
-
+    
     for torrent_file in torrent_files:
       try:
         # Upload torrent/magnet file to Furk.net and get direct download URLs
