@@ -179,6 +179,7 @@ def main():
     torrent_files = scan_directory(torrents_path)
 
     for torrent_file in torrent_files:
+      try:
         # Upload torrent/magnet file to Furk.net and get direct download URLs
         file_id = upload_to_furk(furk_api, torrent_file)
 
@@ -201,8 +202,14 @@ def main():
                   update_radarr(radarr_key, radarr_address, completed_strm_file)
               else:
                   logger.warning(f"Unrecognized file: {completed_strm_file}")
-
-    # Update Sonarr and Radarr for failed_links
+          
+          # Delete the torrent/magnet file
+          delete_torrent(torrent_file)
+      except Exception as e:
+        logging.error(f"Error processing {torrent_file}: {e}")
+        continue
+                    
+    # Update Sonarr and Radarr for failed_links #THIS IS DEFUNCT#
     for failed_link in failed_links:
         guess = guessit(os.path.basename(failed_link))
         if "episode" in guess and "season" in guess:
@@ -212,8 +219,7 @@ def main():
         else:
             logger.warning(f"Unrecognized failed file: {failed_link}")
 
-    # Delete the torrent/magnet file
-    #delete_torrent(torrent_file)
+
 
 if __name__ == "__main__":
     main()
