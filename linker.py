@@ -51,7 +51,8 @@ for filename in Path(TV_path).rglob('*.strm'):
 for filename in Path(Movies_path).rglob('*.strm'):
     strmfiles.append(filename)
 for filename in strmfiles:
- with open(filename, 'r') as f:
+  try:
+   with open(filename, 'r') as f:
     fileerror = False
     url = f.read()
     f.close()
@@ -99,7 +100,10 @@ for filename in strmfiles:
         #os.remove(filename)
     except KeyError:
      logging.info("Keeping active stream " + f.rsplit("/")[-1])
-
+  
+  except:
+   pass
+  
 data = {'name':'missingEpisodeSearch'}
 requests.post(sonarr_url.format('command'), json=data, headers = {"Content-Type": "application/json"})
 data = {'name':'missingMoviesSearch'}
