@@ -211,14 +211,14 @@ def main():
         continue
                     
     # Update Sonarr and Radarr for failed_links #THIS IS DEFUNCT#
-    for failed_link in failed_links:
-        guess = guessit(os.path.basename(failed_link))
-        if "episode" in guess and "season" in guess:
-            update_sonarr(sonarr_key, sonarr_address, failed_link)
-        elif "movie" in guess:
-            update_radarr(radarr_key, radarr_address, failed_link)
-        else:
-            logger.warning(f"Unrecognized failed file: {failed_link}")
+    #for failed_link in failed_links:
+    #    guess = guessit(os.path.basename(failed_link))
+    #    if "episode" in guess and "season" in guess:
+    #        update_sonarr(sonarr_key, sonarr_address, failed_link)
+    #    elif "movie" in guess:
+    #        update_radarr(radarr_key, radarr_address, failed_link)
+    #    else:
+    #        logger.warning(f"Unrecognized failed file: {failed_link}")
 
 
 
