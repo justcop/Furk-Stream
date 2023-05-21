@@ -27,22 +27,20 @@ def scan_directory(directory):
     Returns a list of the file paths
     """
     torrent_files = glob.glob(os.path.join(directory, "*.torrent"))
+    for torrent_file in torrent_files
+    torrent = Torrent.from_file(torrent_file)
+    with open(torrent_file + ".magnet", 'w') as f:
+        f.write(torrent.magnet_link)
+    os.remove(torrent_file)
+    
     magnet_files = glob.glob(os.path.join(directory, "*.magnet"))
-    return torrent_files + magnet_files
+    return magnet_files
 
-def upload_to_furk(api_key, torrent_path):
-    # Cet data from .torrent or .magnet file
-    extension = os.path.splitext(torrent_path)[1]
-    if extension == ".torrent":
-        with open(torrent_path, "rb") as f:
-            torrent = Torrent.from_file(f)
-            magnet = torrent.magnet_link
-    elif extension == ".magnet":
-        with open(torrent_path, "r") as f:
-            magnet = f.read()
-    else:
-        raise Exception(f"Invalid file type: {extension}")
-
+def upload_to_furk(api_key, magnet_path):
+    # Get data from .torrent or .magnet file
+    with open(magnet_path, "r") as f:
+       magnet = f.read()
+    
     # Make API request
     url = f'https://www.furk.net/api/dl/add?url={magnet}&api_key={api_key}'
     response = requests.get(url)
@@ -99,16 +97,19 @@ def generate_strm_files(api_key, file_id, video_directory):
                 strm_file_path = os.path.join(video_directory, strm_file_name) 
 
                 with open(strm_file_path, "w") as strm_file: 
-                    strm_file.write(video_file["url_dl"]) 
+                    strm_file.write(f"""{video_file["url_dl"]}
+                    #{video_file["name"]}
+                    #*****magnet_link*****
+                    ) 
 
                 strm_files.append(strm_file_path) 
 
                 # Download and save related subtitle files 
                 for subtitle_file in subtitle_files: 
                     if os.path.splitext(video_file["name"])[0] == os.path.splitext(subtitle_file["name"])[0].rstrip(".eng"): 
-                        subtitle_url = subtitle_file["url_dl"] 
-                        subtitle_file_name = os.path.join(video_directory, subtitle_file["name"]) 
-                        with requests.get(subtitle_url, stream=True) as r: 
+                        subtitle_url = subtitle_file["url_dl"]
+                        subtitle_file_name = os.path.join(video_directory, subtitle_file["name"])
+                        with requests.get(subtitle_url, stream=True) as r:
                             r.raise_for_status() 
                             with open(subtitle_file_name, "wb") as f: 
                                 for chunk in r.iter_content(chunk_size=8192): 
