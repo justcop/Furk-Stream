@@ -30,7 +30,7 @@ def scan_directory(directory):
     for torrent_file in torrent_files:
         torrent = Torrent.from_file(torrent_file)
         with open(torrent_file + ".magnet", 'w') as f:
-        f.write(torrent.magnet_link)
+            f.write(torrent.magnet_link)
         os.remove(torrent_file)
     
     magnet_files = glob.glob(os.path.join(directory, "*.magnet"))
