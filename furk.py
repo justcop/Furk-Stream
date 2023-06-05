@@ -97,7 +97,7 @@ def generate_strm_files(api_key, file_id, video_directory):
                 strm_file_path = os.path.join(video_directory, strm_file_name) 
 
                 with open(strm_file_path, "w") as strm_file: 
-                    strm_file.write(f"""{video_file["url_dl"]}
+                    strm_file.write(video_file["url_dl"])
                     #{video_file["name"]}
                     #*****magnet_link*****
                     ) 
