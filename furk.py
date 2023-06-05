@@ -100,7 +100,7 @@ def generate_strm_files(api_key, file_id, video_directory):
                     strm_file.write(video_file["url_dl"])
                     #{video_file["name"]}
                     #*****magnet_link*****
-                    ) 
+
 
                 strm_files.append(strm_file_path) 
 
