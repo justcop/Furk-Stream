@@ -19,6 +19,8 @@ from configs import Movies_path
 from configs import TV_path
 from configs import sonarr_key
 from configs import sonarr_address
+from configs import radarr_key
+from configs import radarr_address
 from configs import completed_path
 from configs import torrents_path
 
@@ -32,7 +34,8 @@ flagged = {}
 removing = []
 removed = 0
 
-sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
+sonarr_url = f"{sonarr_address}/api/{}?apikey={sonarr_key}"
+radarr_url = f"{radarr_address}/api/movie?apikey={radarr_key}"
 
 #removes any torrents that have not downloaded after one week
 logging.info("Checking age of any undownloaded torrents")
@@ -51,6 +54,7 @@ for filename in Path(TV_path).rglob('*.strm'):
 for filename in Path(Movies_path).rglob('*.strm'):
     strmfiles.append(filename)
 for filename in strmfiles:
+  inaccessible = False
   try:
    with open(filename, 'r') as f:
     fileerror = False
@@ -59,47 +63,48 @@ for filename in strmfiles:
     try:
      r = requests.head(url)
     except: # file cannot be accessed and furk is not giving an error to say that the file is not found
-     try: #check that the furk website is still working
-      requests.get("https://www.furk.net/")
-     except: # if not then exit
-      logging.info("furk.net is not accessible - Exiting....")
-      quit()
-     #finally:
-      #r.headers = {
-      #"warning": "file_not_found"
-      #}
+    #check that the furk website is still working
+      requests.head("https://www.furk.net/")
+      if response.status_code != 200:
+          logging.info("furk.net is not accessible - Exiting....")
+          quit()
+      else:
+          inaccessible = True
     f = str(filename) 
     try: #checks if furk gives a file not found error
-      if r.headers['warning'] == 'file_not_found' or r.status_code == '404':
+      if r.headers['warning'] == 'file_not_found' or r.status_code == '404' or inaccessible:
         logging.info("Deleting expired stream " + f.rsplit("/")[-1]) 
         os.remove(filename)
-        show = guessit(filename)
-        title = show.get('title')
-        seasonNumber = show.get('season')
-        episodeNumber = show.get('episode')
-        series = requests.get(sonarr_url.format('series'))
-        series = series.json()
-        for x in series:
-         if x["title"] == title:
-            seriesId = x["id"]
-            break
-        data = {'name':'rescanSeries','seriesId': seriesId}
-        requests.post(sonarr_url.format('command'),json=data)
-        episodes = requests.get(sonarr_url.format('episode'), params={'SeriesiD':seriesId})
-        episodes = episodes.json()
-        for data in episodes:
-         if data['seasonNumber'] == seasonNumber and data['episodeNumber'] == episodeNumber:
-            data['monitored']=True
-            data = str(json.dumps(data))
-            break
+        if guessit(filename).get('type') == 'episode':
+          show = guessit(filename)
+          title = show.get('title')
+          seasonNumber = show.get('season')
+          episodeNumber = show.get('episode')
+          series = requests.get(sonarr_url.format('series'))
+          series = series.json()
+          for x in series:
+            if x["title"] == title:
+              seriesId = x["id"]
+              break
+          data = {'name':'rescanSeries','seriesId': seriesId}
+          requests.post(sonarr_url.format('command'),json=data)
+          episodes = requests.get(sonarr_url.format('episode'), params={'SeriesiD':seriesId})
+          episodes = episodes.json()
+          for data in episodes:
+            if data['seasonNumber'] == seasonNumber and data['episodeNumber'] == episodeNumber:
+              data['monitored']=True
+              data = str(json.dumps(data))
+              break
 
         requests.put(sonarr_url.format('episode'), data=data, headers = {"Content-Type": "application/json"})
         requests.get(sonarr_url.format('wanted/missing'), data=data, headers = {"Content-Type": "application/json"})  
-      #if r.status_code == '404':
+        #if r.status_code == '404':
         #logging.info("Deleting expired stream " + f.rsplit("/")[-1]) 
         #os.remove(filename)
+      else:
+        logging.info("Keeping active stream " + f.rsplit("/")[-1])
     except KeyError:
-     logging.info("Keeping active stream " + f.rsplit("/")[-1])
+     logging.info("(Possible Error in checking) Keeping active stream " + f.rsplit("/")[-1])
   
   except:
    pass
