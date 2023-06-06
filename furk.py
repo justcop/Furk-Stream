@@ -70,7 +70,7 @@ def check_availability(api_key, file_id):
     else:
         raise Exception(f"Error getting download link: {response.status_code} - {file_obj.text}")
 
-def generate_strm_files(api_key, file_id, video_directory): 
+def generate_strm_files(api_key, file_id, video_directory,magnet_file=''): 
     strm_files = [] 
 
     url = f"https://www.furk.net/api/file/get?api_key={api_key}&id={file_id}&t_files=1" 
@@ -92,15 +92,21 @@ def generate_strm_files(api_key, file_id, video_directory):
                     subtitle_files.append(file) 
 
             # Create .strm files for each video file and download related subtitles 
-            for video_file in video_files: 
+            for video_file in video_files:
+
+                        
                 strm_file_name = os.path.splitext(video_file["name"])[0] + ".strm" 
                 strm_file_path = os.path.join(video_directory, strm_file_name) 
 
                 with open(strm_file_path, "w") as strm_file: 
-                    strm_file.write(video_file["url_dl"])
-                    #{video_file["name"]}
-                    #*****magnet_link*****
-
+                    strm_file.write(
+                        {video_file["url_dl"]
+                        f"#{video_file["name"][0]}"
+                    )
+                    if magnet_file:
+                        with open(file_path, 'r') as file:
+                            magnet_link = file.read()
+                        strm_file.write(f"\n#{magnet_link}")
 
                 strm_files.append(strm_file_path) 
 
@@ -178,18 +184,18 @@ def main():
 
     # Scan the directory for torrent/magnet files
     print("Searching torrent directory for torrent/magnet files")
-    torrent_files = scan_directory(torrents_path)
+    magnet_files = scan_directory(torrents_path)
     
-    for torrent_file in torrent_files:
+    for magnet_file in magnet_files:
       try:
         # Upload torrent/magnet file to Furk.net and get direct download URLs
-        file_id = upload_to_furk(furk_api, torrent_file)
+        file_id = upload_to_furk(furk_api, magnet_file)
 
         # Check the dl_status of each link
         if check_availability(furk_api, file_id):
 
           # Generate .strm files and extract subtitles for finished files
-          strm_files = generate_strm_files(furk_api, file_id, completed_path)
+          strm_files = generate_strm_files(furk_api, file_id, completed_path, magnet_file)
 
           for strm_file in strm_files:
               # Move completed strm file to the completed path
@@ -206,9 +212,9 @@ def main():
                   logger.warning(f"Unrecognized file: {completed_strm_file}")
           
           # Delete the torrent/magnet file
-          delete_torrent(torrent_file)
+          delete_torrent(magnet_file)
       except Exception as e:
-        logging.error(f"Error processing {torrent_file}: {e}")
+        logging.error(f"Error processing {magnet_file}: {e}")
         continue
                     
     # Update Sonarr and Radarr for failed_links #THIS IS DEFUNCT#
