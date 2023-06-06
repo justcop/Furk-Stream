@@ -115,8 +115,9 @@ data = {'name':'missingEpisodeSearch'}
 requests.post(sonarr_url.format('command'), json=data, headers = {"Content-Type": "application/json"})
 data = {'name':'missingMoviesSearch'}
 requests.post(radarr_url.format('command'), json=data, headers = {"Content-Type": "application/json"})
- 
-for folder in os.listdir(completed_path):
- elapsed = datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(os.path.getmtime(completed_path+"/"+folder))  
- if elapsed > datetime.timedelta(hours=3):
-    shutil.rmtree(completed_path+"/"+folder)
+
+#I don't remember writing this but maybe it should only delete folders that don't contain a .strm file
+#for folder in os.listdir(completed_path):
+# elapsed = datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(os.path.getmtime(completed_path+"/"+folder))  
+# if elapsed > datetime.timedelta(hours=3):
+#    shutil.rmtree(completed_path+"/"+folder)
