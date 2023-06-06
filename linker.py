@@ -80,7 +80,7 @@ for filename in strmfiles:
     except:
         pass
     try: #checks if furk gives a file not found error
-        if r.status_code == '404' or inaccessible:
+      if r.status_code == '404' or inaccessible:
         logging.info("Deleting expired stream " + f.rsplit("/")[-1]) 
         os.remove(filename)
         if guessit(filename).get('type') == 'episode':
