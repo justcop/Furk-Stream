@@ -104,9 +104,9 @@ for filename in strmfiles:
         #logging.info("Deleting expired stream " + f.rsplit("/")[-1]) 
         #os.remove(filename)
       else:
-        logging.info("Keeping active stream " + f.rsplit("/")[-1])
-    except KeyError:
-     logging.info("(Possible Error in checking) Keeping active stream " + f.rsplit("/")[-1])
+        logging.info(f"Keeping active stream {f.rsplit('/')[-1]}")
+    except KeyError as e:
+     logging.info(f"({e}) Keeping active stream {f.rsplit('/')[-1]}")
   
   except:
    pass
