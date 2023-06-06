@@ -72,9 +72,12 @@ for filename in strmfiles:
           elapsed = datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))  
           if elapsed > datetime.timedelta(hours=24):
               inaccessible = True
-    f = str(filename) 
+    f = str(filename)
+    try:
+        if r.headers['warning'] == 'file_not_found':
+            inaccessible = True
     try: #checks if furk gives a file not found error
-      if r.headers['warning'] == 'file_not_found' or r.status_code == '404' or inaccessible:
+        if r.status_code == '404' or inaccessible:
         logging.info("Deleting expired stream " + f.rsplit("/")[-1]) 
         os.remove(filename)
         if guessit(filename).get('type') == 'episode':
