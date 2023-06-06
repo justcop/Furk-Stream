@@ -74,8 +74,11 @@ for filename in strmfiles:
               inaccessible = True
     f = str(filename)
     try:
-        if r.headers['warning'] == 'file_not_found':
-            inaccessible = True
+        if r.headers['warning']:
+            if r.headers['warning'] == 'file_not_found':
+                inaccessible = True
+    except:
+        pass
     try: #checks if furk gives a file not found error
         if r.status_code == '404' or inaccessible:
         logging.info("Deleting expired stream " + f.rsplit("/")[-1]) 
