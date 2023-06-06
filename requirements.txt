@@ -21,7 +21,7 @@ python_dateutil == 2.8.2
 # Furk-Stream/furk.py: 5
 # Furk-Stream/linker.py: 7
 # Furk-Stream/strmFromFurkURL.py: 3
-requests == 2.25.1
+requests
 
 # Furk-Stream/furk.py: 15
 # Furk-Stream/strmFromFurkURL.py: 14
