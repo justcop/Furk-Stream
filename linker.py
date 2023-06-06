@@ -58,7 +58,7 @@ for filename in strmfiles:
   try:
    with open(filename, 'r') as f:
     fileerror = False
-    url = f.read()
+    url = f.readline()
     f.close()
     try:
      r = requests.head(url)
@@ -69,7 +69,9 @@ for filename in strmfiles:
           logging.info("furk.net is not accessible - Exiting....")
           quit()
       else:
-          inaccessible = True
+          elapsed = datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))  
+          if elapsed > datetime.timedelta(hours=24):
+              inaccessible = True
     f = str(filename) 
     try: #checks if furk gives a file not found error
       if r.headers['warning'] == 'file_not_found' or r.status_code == '404' or inaccessible:
