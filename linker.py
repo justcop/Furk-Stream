@@ -34,8 +34,8 @@ flagged = {}
 removing = []
 removed = 0
 
-sonarr_url = f"{sonarr_address}/api/{}?apikey={sonarr_key}"
-radarr_url = f"{radarr_address}/api/movie?apikey={radarr_key}"
+sonarr_url = sonarr_address + '/api/{}?apikey=' + sonarr_key
+radarr_url = radarr_address + '/api/{}?apikey=' + radarr_key
 
 #removes any torrents that have not downloaded after one week
 logging.info("Checking age of any undownloaded torrents")
